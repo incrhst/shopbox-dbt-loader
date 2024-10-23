@@ -1,0 +1,43 @@
+-- models/transform/transformed_users.sql
+
+{{ config(materialized='table') }}
+
+WITH existing_users AS (
+    SELECT *
+    FROM {{ ref('users') }}
+),
+transformed_data AS (
+    SELECT
+        LEFT(input_by, 1) AS UserFirstName,
+        SUBSTRING(input_by, 2, LEN(input_by)) AS UserLastName,
+        CAST(NEWID() AS CHAR(36)) AS UserGUID,
+        CAST(GETDATE() AS DATE) AS UserValidFromDate,
+        CAST(DATEADD(YEAR, 1, GETDATE()) AS DATE) AS UserValidUntilDate,
+        1 AS UserIsActive,
+        input_by AS UserName
+    FROM {{ ref('staging_users') }}
+    WHERE input_by IS NOT NULL
+      AND input_by NOT IN (SELECT UserName FROM existing_users)
+)
+
+SELECT 
+    UserFirstName,
+    UserLastName,
+    UserGUID,
+    UserValidFromDate,
+    UserValidUntilDate,
+    UserIsActive,
+    UserName
+FROM existing_users
+
+UNION ALL
+
+SELECT 
+    UserFirstName,
+    UserLastName,
+    UserGUID,
+    UserValidFromDate,
+    UserValidUntilDate,
+    UserIsActive,
+    UserName
+FROM transformed_data

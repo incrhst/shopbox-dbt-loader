@@ -1,0 +1,93 @@
+WITH transformed_packages AS (
+  SELECT
+    InternationalTrackingNumber,
+    PackageNumber,
+    Master,
+    Supplier,
+    SupplierInvoiceNumber,
+    PackageDescription,
+    TariffDescription,
+
+     -- Convert 'Hazmat' field to a boolean
+    CASE
+      WHEN Hazmat = 'Y' THEN TRUE
+      ELSE FALSE
+    END AS Hazmat,
+    TotalPieces,
+
+    -- Convert 'Consolidation' field to a boolean
+    CASE
+      WHEN Consolidation = 'Y' THEN TRUE
+      ELSE FALSE
+    END AS Consolidation,
+
+    ConsolidationPackageNumber,
+
+    -- Convert Length, Width, Height, and TotalWeight to numeric types
+    CAST(Length AS DECIMAL(10, 2)) AS Length,
+    CAST(Width AS DECIMAL(10, 2)) AS Width,
+    CAST(Height AS DECIMAL(10, 2)) AS Height,
+    CAST(TotalWeight AS DECIMAL(10, 2)) AS TotalWeight,
+    CAST(VolumetricWeight AS DECIMAL(10, 2)) AS VolumetricWeight,
+
+    Shipper,
+    PackageValue,
+    InputBy,
+    -- Combine DateFirstSeen and TimeFirstSeen into a single datetime field
+    CONCAT(DateFirstSeen, ' ', TimeFirstSeen) AS PackageFirstSeenDateTime,
+
+    CustomerID,
+    AccountNumber,
+    CustomerName,
+    
+    -- Transform the LocationLastSeen to package_location_last_seen_id
+    CASE
+      WHEN LocationLastSeen = 'Castries' THEN 1
+      WHEN LocationLastSeen = 'Head Office' THEN 1
+      WHEN LocationLastSeen = 'Rodney Bay Office' THEN 2
+      WHEN LocationLastSeen = 'RB BOX 10' THEN 2
+      WHEN LocationLastSeen = 'Vieux Fort Office' THEN 5
+      WHEN LocationLastSeen = 'Miami' THEN 6
+      WHEN LocationLastSeen = 'Front Counter' THEN 6
+      WHEN LocationLastSeen = 'Local Warehouse' THEN 7
+      ELSE NULL
+    END AS package_location_last_seen_id,
+    
+    -- Combine DateLastSeen and TimeLastSeen into a single datetime field
+    CONCAT(DateLastSeen, ' ', TimeLastSeen) AS last_seen_datetime,
+
+    ShipmentID,
+
+    -- Truncate Notes to 255 characters
+    LEFT(Notes, 255) AS Notes,  -- Truncate Notes field
+
+    PackageStatus,
+    InternalStatus,
+    Emailed,
+    DeliveryNotificationSent,
+    SupplierInvoice,
+    EffectiveRoute,
+    AllowCourierPick,
+    AllowMiamiUpdate,
+    ValueUpdatedLocally,
+    ScheduledForDelivery,
+    ScheduledBy,
+    ExpectedDeliveryDate,
+    ext,
+    upload_date,
+    flag,
+    created_at,
+    updated_at,
+    location_id,
+    prealert_tracking_number,
+    agent_prefix,
+    packed_in_shipment,
+    parent
+  FROM {{ source('jsonl_sources', 'packages') }}
+  -- Filter to only include rows where DateLastSeen is in the current year
+  WHERE YEAR(DateLastSeen) = YEAR(CURRENT_DATE)
+)
+
+-- This will output the transformed package data
+SELECT * FROM transformed_packages;
+

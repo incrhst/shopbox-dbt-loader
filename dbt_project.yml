@@ -1,0 +1,19 @@
+# dbt_project.yml
+name: 'shopbox_transformations'
+version: '1.0.0'
+config-version: 2
+
+# Define where your dbt models are located
+model-paths: ['models']
+
+# Specify the profile to be used for connections
+profile: 'production'
+
+# Optionally, you can define materialization defaults here
+models:
+  shopbox_transformations:
+    staging:
+      materialized: view  # Materialization for staging models
+    transform:
+      materialized: table  # Materialization for transform models
+

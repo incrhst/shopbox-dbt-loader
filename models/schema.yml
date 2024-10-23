@@ -1,0 +1,228 @@
+version: 2
+
+models:
+  - name: Customer
+    description: "Customer master data with composite key of agent prefix and account number"
+    config:
+      materialized: incremental
+      unique_key: ['CustomerAgentPrefix','CustomerAccountNumber']
+    columns:
+      - name: CustomerAgentPrefix
+        description: "Agent prefix part of the composite key"
+        tests:
+          - not_null
+      - name: CustomerAccountNumber
+        description: "Account number part of the composite key"
+        tests:
+          - not_null
+
+  - name: ImportPackage
+    description: "Main package table with relationships to Customer, User, Supplier and Courier"
+    config:
+      materialized: incremental
+      unique_key: PackageNumber
+    columns:
+      - name: PackageNumber
+        description: "Unique identifier for each package"
+        tests:
+          - unique
+          - not_null
+      
+      - name: CustomerAccountNumber
+        description: "Account number linking to Customer table"
+        tests:
+          - relationships:
+              to: ref('Customer')
+              field: CustomerAccountNumber
+      
+      - name: UserId
+        description: "Foreign key to User table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('User')
+              field: UserId
+      
+      - name: SupplierName
+        description: "Foreign key to Supplier table"
+        tests:
+          - relationships:
+              to: ref('Supplier')
+              field: SupplierName
+      
+      - name: CourierName
+        description: "Foreign key to Courier table"
+        tests:
+          - relationships:
+              to: ref('Courier')
+              field: CourierName
+    
+    dependencies:
+      - ref('Customer')
+      - ref('Supplier')
+      - ref('Courier')
+      - ref('User')
+
+  - name: PackagePackageEvent
+    description: "Package event history tracking"
+    config:
+      materialized: incremental
+      unique_key: ['PackageNumber','PackageStatusName','EventDate']
+    columns:
+      - name: PackageNumber
+        tests:
+          - not_null
+          - relationships:
+              to: ref('ImportPackage')
+              field: PackageNumber
+      
+      - name: PackageStatusName
+        tests:
+          - not_null
+      
+      - name: EventDate
+        tests:
+          - not_null
+    
+    dependencies:
+      - ref('ImportPackage')
+
+  - name: Invoice
+    description: "Package invoicing header table"
+    config:
+      materialized: incremental
+      unique_key: InvoiceNumber
+    columns:
+      - name: InvoiceNumber
+        description: "Unique identifier for each invoice"
+        tests:
+          - unique
+          - not_null
+      
+      - name: PackageNumber
+        description: "Foreign key to ImportPackage"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('ImportPackage')
+              field: PackageNumber
+    
+    dependencies:
+      - ref('ImportPackage')
+
+  - name: InvoiceDetail
+    description: "Invoice line items"
+    config:
+      materialized: incremental
+      unique_key: ['InvoiceNumber','InvoiceDetailId']
+    columns:
+      - name: InvoiceNumber
+        tests:
+          - not_null
+          - relationships:
+              to: ref('Invoice')
+              field: InvoiceNumber
+      
+      - name: InvoiceDetailId
+        tests:
+          - not_null
+    
+    dependencies:
+      - ref('Invoice')
+
+  - name: Payment
+    description: "Payment records for invoices"
+    config:
+      materialized: incremental
+      unique_key: PaymentId
+    columns:
+      - name: PaymentId
+        description: "Unique identifier for payment"
+        tests:
+          - unique
+          - not_null
+      
+      - name: InvoiceNumber
+        description: "Foreign key to Invoice"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('Invoice')
+              field: InvoiceNumber
+      
+      - name: PaymentAmount
+        description: "Amount of the payment"
+        tests:
+          - not_null
+    
+    dependencies:
+      - ref('Invoice')
+
+  - name: OtherCharge
+    description: "Table containing other charges information"
+    config:
+      tags: ["transaction", "charges"]
+    columns:
+      - name: OtherChargeCreatedDate
+        description: "Date when the charge was created"
+        data_type: date
+
+      - name: OtherChargeCreatedTime
+        description: "Time when the charge was created"
+        data_type: time
+
+      - name: OtherChargeAmount
+        description: "Amount of the charge"
+        data_type: decimal(18,2)
+
+      - name: InvoiceNumber
+        description: "Associated invoice number"
+        data_type: varchar(50)
+
+      - name: OtherChargeUserId
+        description: "ID of the user associated with the charge"
+        data_type: int
+
+      - name: PaymentMethodName
+        description: "Name of the payment method used"
+        data_type: varchar(50)
+
+  - name: PreAlert
+    description: "Package pre-alert information"
+    config:
+      materialized: table
+    columns:
+      - name: CustomerAccountNumber
+        description: "Foreign key to Customer"
+        tests:
+          - not_null
+      
+      - name: CustomerAgentPrefix
+        description: "Foreign key to Customer"
+        tests:
+          - not_null
+    
+    dependencies:
+      - ref('Customer')
+
+  - name: SignUp
+    description: "Customer sign-up records"
+    config:
+      materialized: incremental
+      unique_key: SignUpId
+    columns:
+      - name: SignUpId
+        description: "Unique identifier for sign-up record"
+        tests:
+          - unique
+          - not_null
+      
+      - name: SignUpAccountNumber
+        description: "Account number assigned during sign-up"
+        tests:
+          - not_null
+      
+      - name: SignUpEmail
+        description: "Primary email address"
+        tests:
+          - not_null

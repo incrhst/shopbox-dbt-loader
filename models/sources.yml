@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: migration
+    schema: dbo
+    tables:
+      - name: Courier
+      - name: Customer
+      - name: ImportPackage
+      - name: Invoice
+      - name: InvoiceDetail
+      - name: InvoiceDiscount
+      - name: OtherCharge
+      - name: PackagePackageEvent
+      - name: Payment
+      - name: PreAlert
+      - name: SignUp
+      - name: Supplier
+      - name: User
+      - name: customer_key_migrate
+      - name: invoicemaster_key_migrate
+      - name: invoicedetails_migrate
+      - name: payment_migrate
+      - name: othercharge_migrate
+      - name: package_key_migrate
+      - name: packageevent_migrate
+      - name: packagestatus_migrate
+      - name: prealert_key_migrate
+      - name: signups_key_migrate
