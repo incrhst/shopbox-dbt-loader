@@ -9,7 +9,7 @@
 }}
 WITH source AS (
     SELECT *
-    FROM {{ source('migration', 'prealert_key_migrate') }}
+    FROM {{ source('migration', 'prealert_standalone_migrate') }}
 ),
 transformed AS (
     SELECT

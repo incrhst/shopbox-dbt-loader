@@ -47,7 +47,7 @@ WITH source AS (
         NULL as SignUpSecondContactEmail,
         NULL as SignUpSecondContactFirstName,
         NULL as SignUpSecondContactLastName
-    FROM {{ source('migration', 'signups_key_migrate') }}
+    FROM {{ source('migration', 'signups_standalone_migrate') }}
 )
 
 SELECT *

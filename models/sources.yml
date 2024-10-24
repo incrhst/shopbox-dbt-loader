@@ -17,7 +17,7 @@ sources:
       - name: SignUp
       - name: Supplier
       - name: User
-      - name: customer_key_migrate
+      - name: customer_standalone_migrate
       - name: invoicemaster_key_migrate
       - name: invoicedetails_migrate
       - name: payment_migrate
@@ -25,5 +25,5 @@ sources:
       - name: package_key_migrate
       - name: packageevent_migrate
       - name: packagestatus_migrate
-      - name: prealert_key_migrate
-      - name: signups_key_migrate
+      - name: prealert_standalone_migrate
+      - name: signups_standalone_migrate

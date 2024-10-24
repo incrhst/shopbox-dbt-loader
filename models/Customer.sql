@@ -57,7 +57,7 @@ WITH source_customers AS (
             WHEN AvailableSaturday = 'no' THEN 0
         END AS CustomerAvailableSaturday,  -- Updated AvailableSaturday mapping
        '' AS CustomerReference  -- Using COALESCE to set to '' if missing
-    FROM {{ source('migration', 'customer_key_migrate') }}
+    FROM {{ source('migration', 'customer_standalone_migrate') }}
 ),
 
 existing_customers AS (
