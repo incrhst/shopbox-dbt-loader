@@ -46,8 +46,8 @@ transformed AS (
             ELSE NULL  -- Handle any unmapped or unexpected values
         END AS PaymentUserId,
         PaymentComment as comment,
-        LocationId as location_id,
-        PaymentMethodName as payment_method
+        location_id as LocationId
+        payment_method as PaymentMethodName
     FROM source
 )
 
