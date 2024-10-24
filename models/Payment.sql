@@ -9,13 +9,13 @@
 
 WITH source AS (
     SELECT
-       payment_date as PaymentDate,
-       payment_time as PaymentTime,
+       PaymentDate,
+       PaymentTime,
        amount as  PaymentAmount,
-       invoice_number as  InvoiceNumber,
-        payment_time as PaymentCreatedDateTime,
-        created_by,  -- Assuming created_by is in the source data
-        '' as PaymentComment,
+       InvoiceNumber,
+       PaymentTime as PaymentCreatedDateTime,
+       Route as source_route,
+       CreatedBy,  -- Assuming created_by is in the source data
         NULL as LocationId,
         payment_method as PaymentMethodName
     FROM {{ source('migration', 'payment_migrate') }}
@@ -46,7 +46,22 @@ transformed AS (
             ELSE NULL  -- Handle any unmapped or unexpected values
         END AS PaymentUserId,
         PaymentComment as comment,
-        location_id as LocationId
+        CASE
+            WHEN source_route = 'Castries Office' THEN 1
+            WHEN source_route = 'Rodney Bay Office' THEN 263
+            WHEN source_route = 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
+            WHEN source_route = 'Vieux Fort Office' THEN 316
+            WHEN source_route = 'Castries' THEN 253
+            WHEN source_route = 'Dennery' THEN 254
+            WHEN source_route = 'Micoud' THEN 255
+            WHEN source_route = 'Vieux Fort' THEN 256
+            WHEN source_route = 'Gros Islet' THEN 252
+            WHEN source_route = 'Soufriere' THEN 258
+            WHEN source_route = 'Anse La Raye' THEN 260
+            WHEN source_route = 'Choiseul' THEN 257
+            WHEN source_route = 'Canaries' THEN 259
+            ELSE NULL  -- Fallback for unmatched routes
+        END AS LocationId,
         payment_method as PaymentMethodName
     FROM source
 )
