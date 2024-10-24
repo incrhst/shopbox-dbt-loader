@@ -59,8 +59,8 @@ transformed as (
         case when s.uploaded = 'no' then 0 else 1 end as InvoiceUploaded,
         case when s.allow_email = 'no' then 0 else 1 end as InvoiceAllowEmail,
         case when s.allow_print = 'no' then 0 else 1 end as InvoiceAllowPrint,
-        cast('1900-01-01' as date) AS InvoicePaidOffTime,
-        cast('1900-01-01' as date) AS InvoicePaidOffDate,
+        s.TimePaidOff AS InvoicePaidOffTime,
+        s.TimePaidOff AS InvoicePaidOffDate,
         1 as InvoiceUserId
     from source s
     where s.row_num = 1  -- Take only the first row for each invoice_number
