@@ -48,8 +48,8 @@ transformed as (
         s.consignee {{ colsql }} as InvoiceConsignee,
         s.shipper {{ colsql }} as InvoiceShipper,
         case
-            when s.invoice_status = 'PAID' then 'PAID'
-            else 'UNPAID'
+            when s.invoice_status = 'PAID' then 'Paid'
+            else 'Unpaid'
         end {{ colsql }} as InvoiceStatus,
         upper(trim(s.route)) {{ colsql }} as RouteName,
         s.invoice_weight AS InvoiceWeight,
