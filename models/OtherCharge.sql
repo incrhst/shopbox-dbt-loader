@@ -9,10 +9,10 @@
 }}
 
 SELECT
-    date_created AS OtherChargeCreatedDate,
-    time_created AS OtherChargeCreatedTime,
-    amount AS OtherChargeAmount,
-    invoice_number AS InvoiceNumber,
-    user_id AS OtherChargeUserId,
-    payment_method AS PaymentMethodName
+    DateCreated AS OtherChargeCreatedDate,
+    TimeCreated AS OtherChargeCreatedTime,
+    Amount AS OtherChargeAmount,
+    InvoiceNumber AS InvoiceNumber,
+    UserId AS OtherChargeUserId,
+    PaymentMethod AS PaymentMethodName
 FROM {{ source('migration', 'othercharge_migrate') }}
