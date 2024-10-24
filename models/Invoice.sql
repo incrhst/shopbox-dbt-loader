@@ -47,6 +47,22 @@ transformed as (
         s.PackageNumber AS PackageNumber,
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
+        CASE 
+            WHEN source_route = 'Castries Office' THEN 1
+            WHEN source_route = 'Rodney Bay Office' THEN 263
+            WHEN source_route = 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
+            WHEN source_route = 'Vieux Fort Office' THEN 316
+            WHEN source_route = 'Castries' THEN 253
+            WHEN source_route = 'Dennery' THEN 254
+            WHEN source_route = 'Micoud' THEN 255
+            WHEN source_route = 'Vieux Fort' THEN 256
+            WHEN source_route = 'Gros Islet' THEN 252
+            WHEN source_route = 'Soufriere' THEN 258
+            WHEN source_route = 'Anse La Raye' THEN 260
+            WHEN source_route = 'Choiseul' THEN 257
+            WHEN source_route = 'Canaries' THEN 259
+            ELSE NULL  -- Fallback for unmatched routes
+        END AS RouteId,
         case
             when s.InvoiceStatus = 'PAID' then 'Paid'
             else 'Unpaid'
@@ -79,7 +95,7 @@ final as (
         t.InvoiceConsignee,
         t.InvoiceShipper,
         t.InvoiceStatus,
-        null as RouteId,
+        t.RouteId,
         t.InvoiceWeight,
         t.InvoicePieces,
         t.InvoicePrinted,
