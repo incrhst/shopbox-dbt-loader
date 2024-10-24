@@ -20,7 +20,7 @@ status_mapping AS (
         CASE
             WHEN event_description LIKE '%Delivered%' THEN 'Delivered'
             WHEN event_description LIKE '%Detain at Custom%' THEN 'Detained'
-            WHEN event_description LIKE '%Transit%' THEN 'InTransit'
+            WHEN event_description LIKE '%Transit%' THEN 'In Transit'
             WHEN event_description LIKE '%Received at Ware%' THEN 'ReceivedWarehouse'
             WHEN event_description LIKE '%Received from Shipper%' THEN 'Received'
             WHEN event_description LIKE '%Scanned at Ware%' THEN 'ScannedWarehouse'
