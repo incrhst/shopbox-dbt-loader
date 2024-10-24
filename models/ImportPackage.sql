@@ -32,34 +32,34 @@ existing_packages AS (
 ),
 transformed AS (
     SELECT
-        pd.package_number {{ colsql }} AS PackageNumber,
-        pd.international_tracking_number {{ colsql }} AS PackageInternationalTrackingNu,
-        COALESCE(pd.prealert_tracking_number, '') AS PackagePrealertTrackingNumber,
-        COALESCE(pd.supplier_invoice_number, '') AS PackageSupplierInvoiceNumber,
-        pd.package_description {{ colsql }} AS PackageDescription,
-        pd.tariff_description {{ colsql }} AS PackageTariffDescription,
+        pd.PackageNumber {{ colsql }} AS PackageNumber,
+        pd.InternationalTrackingNumber {{ colsql }} AS PackageInternationalTrackingNu,
+        COALESCE(pd.PrealertTrackingNumber, '') AS PackagePrealertTrackingNumber,
+        COALESCE(pd.SupplierInvoiceNumber, '') AS PackageSupplierInvoiceNumber,
+        pd.PackageDescription {{ colsql }} AS PackageDescription,
+        pd.TariffDescription {{ colsql }} AS PackageTariffDescription,
         CASE
             WHEN pd.hazmat = 'yes' THEN 1
             ELSE 0
         END AS PackageHazmat,
         CASE
-            WHEN pd.consolidation = 'no' THEN 0
+            WHEN pd.Consolidation = 'no' THEN 0
             ELSE 1
         END AS PackagePartMultiplePiece,
-        pd.total_pieces AS PackageTotalPieces,
+        pd.TotalPieces AS PackageTotalPieces,
         CASE
-            WHEN pd.consolidation = 'no' THEN 0
+            WHEN pd.Consolidation = 'no' THEN 0
             ELSE 1
         END AS PackageConsolidation,
-        pd.consolidation_package_number {{ colsql }} AS PackageConsolidationPackageNum,
+        pd.ConsolidationPackageNumber {{ colsql }} AS PackageConsolidationPackageNum,
         pd.length AS PackageLength,
         pd.location_id AS PackageLocationId,
         pd.width AS PackageWidth,
         pd.height AS PackageHeight,
-        pd.total_weight AS PackageTotalWeight,
+        pd.TotalWeight AS PackageTotalWeight,
         pd.shipper {{ colsql }} AS PackageShipper,
-        pd.package_value AS PackageValue,
-        pd.date_first_seen AS PackageFirstSeenDateTime,
+        pd.PackageValue AS PackageValue,
+        pd.DateFirstSeen AS PackageFirstSeenDateTime,
         c.CustomerAccountNumber,
         c.CustomerAgentPrefix,
         pd.location_id AS PackageLocationLastSeenId,
