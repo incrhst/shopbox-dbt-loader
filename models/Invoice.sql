@@ -10,7 +10,7 @@
 -- First, let's identify any duplicates in the source
 with source_duplicates as (
     select 
-        invoice_number,
+        InvoiceNumber,
         count(*) as duplicate_count
     from {{ source('migration', 'invoicemaster_key_migrate') }}
     group by invoice_number
@@ -22,10 +22,10 @@ source as (
         s.*,
         -- Add row number to pick the most recent record for duplicates
         row_number() over (
-            partition by invoice_number 
+            partition by InvoiceNumber 
             order by 
-                invoice_date desc,
-                case when invoice_status = 'PAID' then 1 else 2 end  -- Prefer PAID status
+                InvoiceDate desc,
+                case when InvoiceStatus = 'PAID' then 1 else 2 end  -- Prefer PAID status
         ) as row_num
     from {{ source('migration', 'invoicemaster_key_migrate') }} s
 ),
@@ -42,23 +42,23 @@ existing_invoices as (
 
 transformed as (
     select
-        s.invoice_number AS InvoiceNumber,
-        s.invoice_date AS InvoiceDate,
-        s.package_number AS PackageNumber,
-        s.consignee {{ colsql }} as InvoiceConsignee,
-        s.shipper {{ colsql }} as InvoiceShipper,
+        s.InvoiceNumber AS InvoiceNumber,
+        s.InvoiceDate AS InvoiceDate,
+        s.PackageNumber AS PackageNumber,
+        s.Consignee {{ colsql }} as InvoiceConsignee,
+        s.Shipper {{ colsql }} as InvoiceShipper,
         case
-            when s.invoice_status = 'PAID' then 'Paid'
+            when s.InvoiceStatus = 'PAID' then 'Paid'
             else 'Unpaid'
         end {{ colsql }} as InvoiceStatus,
         upper(trim(s.route)) {{ colsql }} as RouteName,
-        s.invoice_weight AS InvoiceWeight,
-        s.invoice_pieces AS InvoicePieces,
-        case when s.printed = 1 then 1 else 0 end as InvoicePrinted,
+        s.InvoiceWeight AS InvoiceWeight,
+        s.InvoicePieces AS InvoicePieces,
+        case when s.Printed = 1 then 1 else 0 end as InvoicePrinted,
         case when s.emailed = '1' then 1 else 0 end as InvoiceEmailed,
-        case when s.uploaded = 'no' then 0 else 1 end as InvoiceUploaded,
-        case when s.allow_email = 'no' then 0 else 1 end as InvoiceAllowEmail,
-        case when s.allow_print = 'no' then 0 else 1 end as InvoiceAllowPrint,
+        case when s.Uploaded = 'no' then 0 else 1 end as InvoiceUploaded,
+        case when s.AllowEmail = 'no' then 0 else 1 end as InvoiceAllowEmail,
+        case when s.AllowPrint = 'no' then 0 else 1 end as InvoiceAllowPrint,
         s.TimePaidOff AS InvoicePaidOffTime,
         s.TimePaidOff AS InvoicePaidOffDate,
         1 as InvoiceUserId
@@ -67,7 +67,7 @@ transformed as (
     and not exists (
         select 1
         from existing_invoices e
-        where e.InvoiceNumber = s.invoice_number
+        where e.InvoiceNumber = s.InvoiceNumber
     )
 ),
 
