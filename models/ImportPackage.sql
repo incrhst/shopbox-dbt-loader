@@ -66,18 +66,18 @@ transformed AS (
         LEFT(pd.notes, 255) {{ colsql }} AS PackageNotes,
         '' AS PackagePackedInShipment,
         CASE
-            WHEN pd.package_status = 'Delivered' THEN 'DELIVERED'
-            WHEN pd.package_status = 'Scheduled for Delivery' THEN 'SCHEDULED_FOR_DELIVERY'
-            WHEN pd.package_status = 'Received At Warehouse' THEN 'RECEIVED_WAREHOUSE'
-            WHEN pd.package_status = 'Scanned at Warehouse' THEN 'SCANNED_WAREHOUSE'
-            WHEN pd.package_status = 'Detained at Customs' THEN 'DETAINED'
-            WHEN pd.package_status = 'Delivery Cancelled' THEN 'DELIVERY_CANCELLED'
-            WHEN pd.package_status = 'In Transit' THEN 'IN_TRANSIT'
-            WHEN pd.package_status = 'Returned to Warehouse' THEN 'RETURNED'
-            WHEN pd.package_status = 'Out for Delivery' THEN 'OUT_FOR_DELIVERY'
-            WHEN pd.package_status = 'Received from shipper' THEN 'RECEIVED'
-            WHEN pd.package_status = 'Released from Customs' THEN 'RELEASED'
-            ELSE 'RECEIVED'
+            WHEN pd.package_status = 'Delivered' THEN 'Delivered'
+            WHEN pd.package_status = 'Scheduled for Delivery' THEN 'ScheduledForDelivery'
+            WHEN pd.package_status = 'Received At Warehouse' THEN 'ReceivedWareHouse'
+            WHEN pd.package_status = 'Scanned at Warehouse' THEN 'ScannedWareHouse'
+            WHEN pd.package_status = 'Detained at Customs' THEN 'Detained'
+            WHEN pd.package_status = 'Delivery Cancelled' THEN 'DeliveryCancelled'
+            WHEN pd.package_status = 'In Transit' THEN 'Intransit'
+            WHEN pd.package_status = 'Returned to Warehouse' THEN 'Returned'
+            WHEN pd.package_status = 'Out for Delivery' THEN 'OutForDelivery'
+            WHEN pd.package_status = 'Received from shipper' THEN 'Received'
+            WHEN pd.package_status = 'Released from Customs' THEN 'Released'
+            ELSE 'Received'
         END {{ colsql }} AS PackageActualStatusName,
         SUBSTRING(pd.package_number, 5, 12) {{ colsql }} AS PackageAirwayBillNumber,
         CASE
