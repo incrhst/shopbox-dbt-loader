@@ -16,8 +16,8 @@ WITH source AS (
        PaymentTime as PaymentCreatedDateTime,
        Route as source_route,
        CreatedBy,  -- Assuming created_by is in the source data
-        NULL as LocationId,
-        payment_method as PaymentMethodName
+       LocationId,
+       PaymentMethod as PaymentMethodName
     FROM {{ source('migration', 'payment_migrate') }}
 ),
 
