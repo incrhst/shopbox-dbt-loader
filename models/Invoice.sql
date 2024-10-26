@@ -114,11 +114,11 @@ final as (
 -- Add safety check for duplicates before final output
 select f.*
 from final f
-where InvoiceNumber is not null
+where PackageNumber is not null
 {% if is_incremental() %}
 and not exists (
     select 1
     from {{ this }} existing
-    where existing.InvoiceNumber = f.InvoiceNumber
+    where existing.PackageNumber = f.PackageNumber
 )
 {% endif %}
