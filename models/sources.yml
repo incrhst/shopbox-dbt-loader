@@ -4,6 +4,7 @@ sources:
   - name: migration
     schema: dbo
     tables:
+      - name: Alert
       - name: Courier
       - name: Customer
       - name: ImportPackage
@@ -17,6 +18,7 @@ sources:
       - name: SignUp
       - name: Supplier
       - name: User
+      - name: alert_standalone_migrate
       - name: customer_standalone_migrate
       - name: invoicemaster_key_migrate
       - name: invoicedetails_migrate
