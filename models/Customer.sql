@@ -1,7 +1,7 @@
 {{ config(
     materialized='table',
     unique_key=['CustomerAgentPrefix', 'CustomerAccountNumber'],
-    full_refresh: true
+    full_refresh=true
 ) }}
 {% set colsql = 'COLLATE SQL_Latin1_General_CP1_CI_AS' %} -- Modern_Spanish_CI_AS
 
