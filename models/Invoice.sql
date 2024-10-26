@@ -35,7 +35,7 @@ with transformed as (
         case
             when s.InvoiceStatus {{ colsql }} = 'PAID' then 'Paid'
             else 'Unpaid'
-        end {{ colsql }} as InvoiceStatus,
+        end as InvoiceStatus,
         upper(trim(s.route)) {{ colsql }} as RouteName,
         s.InvoiceWeight,
         s.InvoicePieces,
