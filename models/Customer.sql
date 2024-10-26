@@ -2,7 +2,7 @@
     materialized='table',
     unique_key=['CustomerAgentPrefix', 'CustomerAccountNumber']
 ) }}
-{% set colsql = 'COLLATE Modern_Spanish_CI_AS' %}
+{% set colsql = 'COLLATE SQL_Latin1_General_CP1_CI_AS' %} -- Modern_Spanish_CI_AS
 
 WITH source_customers AS (
     SELECT DISTINCT
