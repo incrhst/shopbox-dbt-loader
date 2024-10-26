@@ -26,8 +26,8 @@ WITH source AS (
         Fax as SignUpFax,
         CONCAT(
             COALESCE(Primary_DeliveryStreet1, ''),
-            CASE WHEN Primary_DeliveryStreet2 IS NOT NULL THEN ' ' + primarydeliverystreet2 ELSE '' END,
-            CASE WHEN Primary_DeliveryCity IS NOT NULL THEN ' ' + primarydeliverycity ELSE '' END
+            CASE WHEN Primary_DeliveryStreet2 IS NOT NULL THEN ' ' + PrimaryDelivery_Street2 ELSE '' END,
+            CASE WHEN Primary_DeliveryCity IS NOT NULL THEN ' ' + PrimaryDelivery_City ELSE '' END
         ) as SignUpPrimaryDeliveryAddress,
         insuranceaccepted as SignUpInsuranceAccepted,
         1 as SignUpAccountTypeId,
@@ -36,8 +36,8 @@ WITH source AS (
         reference as SignUpReference,
         CONCAT(
             COALESCE(ResidentialStreet1, ''),
-            CASE WHEN ResidentialStreet2 IS NOT NULL THEN ' ' + residentialstreet2 ELSE '' END,
-            CASE WHEN ResidentialCity IS NOT NULL THEN ' ' + residentialcity ELSE '' END
+            CASE WHEN ResidentialStreet2 IS NOT NULL THEN ' ' + ResidentialStreet2 ELSE '' END,
+            CASE WHEN ResidentialCity IS NOT NULL THEN ' ' + ResidentialCity ELSE '' END
         ) as SignUpResidentialAddress,
         created_at as SignUpCreatedAt,
         updated_at as SignUpUpdatedAt,
