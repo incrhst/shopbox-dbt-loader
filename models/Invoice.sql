@@ -13,7 +13,7 @@ with transformed as (
     select
         s.InvoiceNumber,
         s.InvoiceDate,
-        s.PackageNumber {{ colsql }},
+        s.PackageNumber {{ colsql }} as PackageNumber,
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
         CASE s.Route {{ colsql }}
