@@ -124,7 +124,26 @@ transformed AS (
             CAST(SUBSTRING(pd.LocationLastSeen, 9, 3) AS NUMERIC) AS PackageLocationLastStorageId,
             'SHELF' AS PackageLocationLastStorageType
      END
-        NULL AS PackageLocationLastStorageType,
+    CASE 
+    WHEN pd.LocationName LIKE '%VF AREA%' THEN 
+        SELECT 
+            CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC) AS StorageId,
+            'AREA' AS StorageType
+    WHEN pd.LocationName LIKE '%VF BOX%' THEN 
+        SELECT 
+            CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC) AS StorageId,
+            'BOX' AS StorageType
+    WHEN pd.LocationName LIKE '%VF SHELF%' THEN 
+        SELECT 
+            CAST(SUBSTRING(pd.LocationName, 9, 3) AS NUMERIC) AS StorageId,
+            'SHELF' AS StorageType
+    ELSE 
+        SELECT 
+            1 AS LocationId,
+            NULL AS StorageId,
+            NULL AS PackageLocationLastStorageType
+      END
+        
         NULL AS RepositoryNumber,
         NULL AS RepositoryType,
        
