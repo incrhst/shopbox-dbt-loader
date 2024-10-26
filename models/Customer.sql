@@ -68,8 +68,8 @@ WITH source_customers AS (
 
 existing_customers AS (
     SELECT
-        CustomerAccountNumber,
-        CustomerAgentPrefix,
+        CustomerAccountNumber {{ colsql }} AS CustomerAccountNumber,
+        CustomerAgentPrefix {{ colsql }} AS CustomerAgentPrefix,
         '' AS CustomerReference  -- Match the source column with COALESCE
     FROM {{ source('migration', 'Customer') }}
 ),
@@ -114,10 +114,10 @@ missing_customers AS (
         sc.CustomerReference  -- Include the corrected column name here
     FROM source_customers sc
     LEFT JOIN existing_customers ec
-    ON sc.CustomerAccountNumber = ec.CustomerAccountNumber
-       AND sc.CustomerAgentPrefix = ec.CustomerAgentPrefix
-    WHERE ec.CustomerAccountNumber IS NULL
-      AND ec.CustomerAgentPrefix IS NULL
+       ON sc.CustomerAccountNumber {{ colsql }} = ec.CustomerAccountNumber
+          AND sc.CustomerAgentPrefix {{ colsql }} = ec.CustomerAgentPrefix
+       WHERE ec.CustomerAccountNumber IS NULL
+         AND ec.CustomerAgentPrefix IS NULL
 )
 
 SELECT
