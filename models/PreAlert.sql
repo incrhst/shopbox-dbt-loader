@@ -13,7 +13,7 @@ WITH source AS (
 ),
 transformed AS (
     SELECT
-        AccountNumber as CustomerAccountNumber
+        AccountNumber as CustomerAccountNumber,
         CAST(COALESCE(LEFT(AgentPrefix, 3), '') as nvarchar(3)) as CustomerAgentPrefix,
         Value as PreAlertAmount,
         Shipper as PreAlertCourierName,
@@ -31,8 +31,8 @@ transformed AS (
         CAST(COALESCE(LastUpdate, GETDATE()) as datetime) as PreAlertLastUpdate,
         CAST(COALESCE(Notes, '') as nvarchar(-1)) as PreAlertNotes, -- nvarchar(-1) means nvarchar(max) in sqlserver
         CAST(0 as bit) as PreAlertSentAMAD, -- Not in source, defaulting to 0
-        CAST(COALESCE(NULL, 'N') as nchar(1)) as PreAlertStatus -- Not in source, defaulting to 'N',
-        CAST(COALESCE(Supplier, '') as nvarchar(100)) as PreAlertSupplierName,
+        NULL as PreAlertStatus -- Not in source, defaulting to 'NULL',
+        CAST(COALESCE(Supplier, '') as nvarchar(100)) as PreAlertSupplierName
     FROM source
 )
 SELECT * FROM transformed
