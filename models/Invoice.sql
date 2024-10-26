@@ -8,21 +8,8 @@
 
 {% set colsql = 'COLLATE Modern_Spanish_CI_AS' %}
 
--- Source data with row numbers to handle duplicates
-with source as (
-    select
-        s.*,
-        row_number() over (
-            partition by InvoiceNumber
-            order by
-                InvoiceDate desc,
-                case when InvoiceStatus {{ colsql }} = 'PAID' then 1 else 2 end  -- Prefer PAID status
-        ) as row_num
-    from {{ source('migration', 'invoicemaster_key_migrate') }} s
-)
-
--- Transform data, applying logic for routes and status
-, transformed as (
+-- Transform source data with necessary mappings and logic
+with transformed as (
     select
         s.InvoiceNumber,
         s.InvoiceDate,
@@ -60,11 +47,10 @@ with source as (
         s.TimePaidOff AS InvoicePaidOffTime,
         s.TimePaidOff AS InvoicePaidOffDate,
         1 as InvoiceUserId
-    from source s
-    where s.row_num = 1  -- Keep only the first row per InvoiceNumber
+    from {{ source('migration', 'invoicemaster_key_migrate') }} s
 )
 
--- Final selection, excluding duplicates in incremental mode
+-- Final selection for merging
 select
     t.InvoiceNumber,
     t.InvoiceDate,
@@ -86,10 +72,3 @@ select
     t.InvoiceUserId
 from transformed t
 where t.PackageNumber {{ colsql }} is not null
-{% if is_incremental() %}
-and not exists (
-    select 1
-    from {{ this }} existing
-    where existing.PackageNumber {{ colsql }} = t.PackageNumber
-)
-{% endif %}
