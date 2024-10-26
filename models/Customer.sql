@@ -6,7 +6,7 @@
 
 WITH source_customers AS (
     SELECT DISTINCT
-        AccountNumber {{ colsql }} AS CustomerAccountNumber,
+        AccountNumber AS CustomerAccountNumber,
         AgentPrefix {{ colsql }} AS CustomerAgentPrefix,
         CONCAT(AgentPrefix {{ colsql }},
         AccountNumber {{ colsql }},
@@ -68,7 +68,7 @@ WITH source_customers AS (
 
 existing_customers AS (
     SELECT
-        CustomerAccountNumber {{ colsql }},
+        CustomerAccountNumber,
         CustomerAgentPrefix {{ colsql }},
         '' AS CustomerReference  -- Match the source column with COALESCE
     FROM {{ source('migration', 'Customer') }}
