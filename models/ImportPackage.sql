@@ -100,10 +100,34 @@ transformed AS (
         1 AS PackageDuration,
         NULL AS ManifestId,
         pd.TotalWeight AS PackageWeight,
+        CASE
+          WHEN pd.LocationLastSeen = 'Castries' THEN 1
+          WHEN pd.LocationLastSeen = 'Head Office' THEN 1
+          WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
+          WHEN pd.LocationLastSeen = 'RB BOX 10' THEN 2
+          WHEN pd.LocationLastSeen = 'Vieux Fort Office' THEN 5
+          WHEN pd.LocationLastSeen = 'Miami' THEN 6
+          WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
+          WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
+        ELSE NULL AS PackageLocationLastStorageId,
+     CASE 
+    WHEN pd.LocationLastSeen LIKE '%RB AREA%' THEN 
+        SELECT 
+            CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC) AS PackageLocationLastStorageId,
+            'AREA' AS PackageLocationLastStorageType
+    WHEN pd.LocationLastSeen LIKE '%RB BOX%' THEN 
+        SELECT 
+            CAST(SUBSTRING(pd.LocationLastSeen, 7, 3) AS NUMERIC) AS PackageLocationLastStorageId,
+            'BOX' AS PackageLocationLastStorageType
+    WHEN pd.LocationLastSeen LIKE '%RB SHELF%' THEN 
+        SELECT 
+            CAST(SUBSTRING(pd.LocationLastSeen, 9, 3) AS NUMERIC) AS PackageLocationLastStorageId,
+            'SHELF' AS PackageLocationLastStorageType
+     END
         NULL AS PackageLocationLastStorageType,
         NULL AS RepositoryNumber,
         NULL AS RepositoryType,
-        NULL AS PackageLocationLastStorageId,
+       
         '' AS PackageInvoicePDF,
         0 AS PackageMarked,
         '' AS PackageTransactionIdentifier,
