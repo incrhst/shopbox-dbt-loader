@@ -174,7 +174,7 @@ transformed AS (
     FROM list_of_existing_package_numbers s
     JOIN package_data pd ON pd.PackageNumber = s.PackageNumber
     JOIN customer_data c
-        ON pd.account_number = c.CustomerAccountNumber
+        ON pd.AccountNumber = c.CustomerAccountNumber
         AND c.CustomerAgentPrefix = 'BSL'
     WHERE NOT EXISTS (
         SELECT 1 FROM existing_packages ep
