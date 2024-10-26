@@ -35,7 +35,7 @@ existing_invoices as (
     from {{ source('migration', 'Invoice') }}
     {% if is_incremental() %}
     UNION
-    select InvoiceNumber
+    select DISTINCT InvoiceNumber
     from {{ this }}
     {% endif %}
 ),
