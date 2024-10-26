@@ -64,7 +64,16 @@ transformed AS (
     CONVERT(VARCHAR(8), pd.TimeFirstSeen, 108) AS PackageFirstSeenDateTime,
         pd.AccountNumber AS CustomerAccountNumber,
         pd.agent_prefix AS CustomerAgentPrefix,
-        pd.location_id AS PackageLocationLastSeenId,
+      CASE
+          WHEN pd.LocationLastSeen = 'Castries' THEN 1
+          WHEN pd.LocationLastSeen = 'Head Office' THEN 1
+          WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
+          WHEN pd.LocationLastSeen = 'RB BOX 10' THEN 2
+          WHEN pd.LocationLastSeen = 'Vieux Fort Office' THEN 5
+          WHEN pd.LocationLastSeen = 'Miami' THEN 6
+          WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
+          WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
+      ELSE NULL AS PackageLocationLastSeenId,
         LEFT(pd.notes, 255) {{ colsql }} AS PackageNotes,
         pd.packed_in_shipment AS PackagePackedInShipment,
         CASE
