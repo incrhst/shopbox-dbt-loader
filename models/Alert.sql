@@ -13,26 +13,351 @@ WITH source AS (
 ),
 transformed AS (
     SELECT
-        AccountNumber as CustomerAccountNumber
-        CAST(COALESCE(LEFT(AgentPrefix, 3), '') as nvarchar(3)) as CustomerAgentPrefix,
-        Value as PreAlertAmount,
-        Shipper as PreAlertCourierName,
-        -- dates must be correct !!!!!!
-        CAST(created_at as datetime) as PreAlertCreatedAt,
-        CAST(DateSet as datetime) as PreAlertDateSet,
-        CAST(COALESCE(Description, '') as nvarchar(200)) as PreAlertDescription,
-        CAST(CASE
-            WHEN Displayed = 'yes' THEN 1
-            ELSE 0
-        END as bit) as PreAlertDisplayed,
-        CAST(COALESCE(TRY_CAST(UserId as int), 0) as int) as PreAlertUserId,
-        CAST(COALESCE(InternationalTrackingNumber, '') as nvarchar(50)) as PreAlertInternationalTrackingN,
-        CAST(NULL as varbinary(max)) as PreAlertInvoicePDF, -- Not in source, setting NULL
-        CAST(COALESCE(LastUpdate, GETDATE()) as datetime) as PreAlertLastUpdate,
-        CAST(COALESCE(Notes, '') as nvarchar(-1)) as PreAlertNotes, -- nvarchar(-1) means nvarchar(max) in sqlserver
-        CAST(0 as bit) as PreAlertSentAMAD, -- Not in source, defaulting to 0
-        CAST(COALESCE(NULL, 'N') as nchar(1)) as PreAlertStatus -- Not in source, defaulting to 'N',
-        CAST(COALESCE(Supplier, '') as nvarchar(100)) as PreAlertSupplierName,
+        Active as AlertActive,
+        RelatedRecordID as AlertRelatedRecordId,
+        MainInstruction as AlertmainInstruction,
+        Details as AlertDetails,
+        EndDate as AlertEndDate,
+        CASE SetBy
+            WHEN 'mcastelnoble' THEN 1
+            WHEN 'customer' THEN 4
+            WHEN 'fff' THEN 5
+            WHEN 'mobile' THEN 6
+            WHEN 'ernestoo' THEN 7
+            WHEN 'ernestoa' THEN 8
+            WHEN 'jgutierrez' THEN 9
+            WHEN 'srodicio' THEN 10
+            WHEN 'asanchez' THEN 11
+            WHEN 'bochilien' THEN 12
+            WHEN 'jsardinas' THEN 13
+            WHEN 'cochilien' THEN 14
+            WHEN 'operations' THEN 15
+            WHEN 'cplasencia' THEN 16
+            WHEN 'bballantyne' THEN 17
+            WHEN 'lgonzales' THEN 18
+            WHEN 'chechavarria' THEN 19
+            WHEN 'asanchez1' THEN 20
+            WHEN 'osoriano' THEN 21
+            WHEN 'jpardo' THEN 22
+            WHEN 'dochilien' THEN 23
+            WHEN 'hdiaz' THEN 24
+            WHEN 'rtoledano' THEN 25
+            WHEN 'aroque' THEN 26
+            WHEN 'aramos' THEN 27
+            WHEN 'aochilien' THEN 28
+            WHEN 'gcharles' THEN 29
+            WHEN 'jmojarrieta' THEN 30
+            WHEN 'jlgonzales' THEN 31
+            WHEN 'lmorales' THEN 32
+            WHEN 'igarcia' THEN 33
+            WHEN 'mrodrigues' THEN 34
+            WHEN 'cmesa' THEN 35
+            WHEN 'ooliu' THEN 36
+            WHEN 'none' THEN 37
+            WHEN 'tmatthew' THEN 38
+            WHEN 'mcarrazana' THEN 39
+            WHEN 'sjan' THEN 40
+            WHEN 'ceugene' THEN 41
+            WHEN 'amaden' THEN 42
+            WHEN 'kemmanuel' THEN 43
+            WHEN 'fperez' THEN 44
+            WHEN 'bvega' THEN 45
+            WHEN 'squevedo' THEN 46
+            WHEN 'lgil' THEN 47
+            WHEN 'wfernandez' THEN 48
+            WHEN 'ujackson' THEN 49
+            WHEN 'nscull' THEN 50
+            WHEN 'mmcphee' THEN 51
+            WHEN 'jlangus' THEN 52
+            WHEN 'garia' THEN 53
+            WHEN 'yflores' THEN 54
+            WHEN 'guest' THEN 55
+            WHEN 'jsantos' THEN 56
+            WHEN 'rgutierrez' THEN 57
+            WHEN 'meugene' THEN 58
+            WHEN 'jblack' THEN 59
+            WHEN 'lcruz' THEN 60
+            WHEN 'darencibia' THEN 61
+            WHEN 'aconzo' THEN 62
+            WHEN 'rperez' THEN 63
+            WHEN 'hmartinez' THEN 64
+            WHEN 'jalvarez' THEN 65
+            WHEN 'jcmilanez' THEN 66
+            WHEN 'jalvah' THEN 67
+            WHEN 'lleon' THEN 68
+            WHEN 'jnavarro' THEN 69
+            WHEN 'jperez' THEN 70
+            WHEN 'system' THEN 71
+            WHEN 'pnorbal' THEN 72
+            WHEN 'bgiron' THEN 73
+            WHEN 'jcarvahal' THEN 74
+            WHEN 'chernandez' THEN 75
+            WHEN 'javigutierrez' THEN 76
+            WHEN 'wmathurin' THEN 77
+            WHEN 'lsomoza' THEN 78
+            WHEN 'rplasencia' THEN 79
+            WHEN 'ifernandez' THEN 80
+            WHEN 'llarkins' THEN 81
+            WHEN 'dbatres' THEN 82
+            WHEN 'equintana' THEN 83
+            WHEN 'aaristizabal' THEN 84
+            WHEN 'rsilva' THEN 85
+            WHEN 'saristizabal' THEN 86
+            WHEN 'adavila' THEN 87
+            WHEN 'dfranco' THEN 88
+            WHEN 'pcamacho' THEN 89
+            WHEN 'scanelo' THEN 90
+            WHEN 'migration' THEN 91
+            WHEN 'javis' THEN 92
+            WHEN 'jvera' THEN 93
+            WHEN 'gdhoy' THEN 94
+            WHEN 'ajoseph' THEN 95
+            WHEN 'sarthur' THEN 96
+            WHEN 'mrios' THEN 97
+            WHEN 'jnunez' THEN 98
+            WHEN 'aegana' THEN 99
+            WHEN 'jdsanchez' THEN 100
+            WHEN 'cagrela' THEN 101
+            WHEN 'msanabria' THEN 102
+            WHEN 'jcohen' THEN 103
+            WHEN 'gojeda' THEN 104
+            WHEN 'jramos' THEN 105
+            WHEN 'kramirez' THEN 106
+            WHEN 'wmendoza' THEN 107
+            WHEN 'mgaillard' THEN 108
+            WHEN 'jmoreno' THEN 109
+            WHEN 'sochoa' THEN 110
+            WHEN 'acabrera' THEN 111
+            WHEN 'lsquillaro' THEN 112
+            WHEN 'ftorres' THEN 113
+            WHEN 'ddaniel' THEN 114
+            WHEN 'jmeneses' THEN 115
+            WHEN 'msalazar' THEN 116
+            WHEN 'yescalona' THEN 117
+            WHEN 'ebravo' THEN 118
+            WHEN 'aalbert' THEN 119
+            WHEN 'olopez' THEN 120
+            WHEN 'dreyes' THEN 121
+            WHEN 'kcharles' THEN 122
+            WHEN 'misaac' THEN 123
+            WHEN 'jmarin' THEN 124
+            WHEN 'jlores' THEN 125
+            WHEN 'sharris' THEN 126
+            WHEN 'orlandyc' THEN 127
+            WHEN 'ledward' THEN 128
+            WHEN 'cdreal' THEN 129
+            WHEN 'guillei' THEN 130
+            WHEN 'jboscan' THEN 131
+            WHEN 'lrodriguez' THEN 132
+            WHEN 'dcarmona' THEN 133
+            WHEN 'aurelianosq' THEN 134
+            WHEN 'erikv' THEN 135
+            WHEN 'jgamardo' THEN 136
+            WHEN 'dvalmont' THEN 137
+            WHEN 'javierperez' THEN 138
+            WHEN 'sbrown' THEN 139
+            WHEN 'lmendoza' THEN 140
+            WHEN 'valerisperez' THEN 141
+            WHEN 'rgonzalez' THEN 142
+            WHEN 'vgutierrez' THEN 143
+            WHEN 'amendoza' THEN 144
+            WHEN 'ashum' THEN 145
+            WHEN 'jpacheco' THEN 146
+            WHEN 'dachellfa' THEN 147
+            WHEN 'mbatres' THEN 148
+            WHEN 'bradley' THEN 149
+            WHEN 'roibas' THEN 150
+            WHEN 'diego' THEN 151
+            WHEN 'door' THEN 152
+            WHEN 'agustin' THEN 153
+            WHEN 'gonzalo' THEN 154
+            WHEN 'ttest' THEN 155
+            WHEN 'gretel' THEN 156
+            WHEN 'dprojex' THEN 157
+            WHEN 'dptest' THEN 158
+            WHEN 'leugene' THEN 161
+            WHEN 'npolius' THEN 162
+            WHEN 'isidonie' THEN 163
+            WHEN 'ejames' THEN 164
+            WHEN 'bduncan' THEN 165
+            WHEN 'lhippolyte' THEN 166
+            WHEN 'remmanuel' THEN 167
+            WHEN 'mcastro' THEN 168
+            WHEN 'rfelicien' THEN 169
+            ELSE NULL
+        END AS UserId
+        DateSet as AlertStartDate,
+        CASE DisabledBy
+            WHEN 'mcastelnoble' THEN 1
+            WHEN 'customer' THEN 4
+            WHEN 'fff' THEN 5
+            WHEN 'mobile' THEN 6
+            WHEN 'ernestoo' THEN 7
+            WHEN 'ernestoa' THEN 8
+            WHEN 'jgutierrez' THEN 9
+            WHEN 'srodicio' THEN 10
+            WHEN 'asanchez' THEN 11
+            WHEN 'bochilien' THEN 12
+            WHEN 'jsardinas' THEN 13
+            WHEN 'cochilien' THEN 14
+            WHEN 'operations' THEN 15
+            WHEN 'cplasencia' THEN 16
+            WHEN 'bballantyne' THEN 17
+            WHEN 'lgonzales' THEN 18
+            WHEN 'chechavarria' THEN 19
+            WHEN 'asanchez1' THEN 20
+            WHEN 'osoriano' THEN 21
+            WHEN 'jpardo' THEN 22
+            WHEN 'dochilien' THEN 23
+            WHEN 'hdiaz' THEN 24
+            WHEN 'rtoledano' THEN 25
+            WHEN 'aroque' THEN 26
+            WHEN 'aramos' THEN 27
+            WHEN 'aochilien' THEN 28
+            WHEN 'gcharles' THEN 29
+            WHEN 'jmojarrieta' THEN 30
+            WHEN 'jlgonzales' THEN 31
+            WHEN 'lmorales' THEN 32
+            WHEN 'igarcia' THEN 33
+            WHEN 'mrodrigues' THEN 34
+            WHEN 'cmesa' THEN 35
+            WHEN 'ooliu' THEN 36
+            WHEN 'none' THEN 37
+            WHEN 'tmatthew' THEN 38
+            WHEN 'mcarrazana' THEN 39
+            WHEN 'sjan' THEN 40
+            WHEN 'ceugene' THEN 41
+            WHEN 'amaden' THEN 42
+            WHEN 'kemmanuel' THEN 43
+            WHEN 'fperez' THEN 44
+            WHEN 'bvega' THEN 45
+            WHEN 'squevedo' THEN 46
+            WHEN 'lgil' THEN 47
+            WHEN 'wfernandez' THEN 48
+            WHEN 'ujackson' THEN 49
+            WHEN 'nscull' THEN 50
+            WHEN 'mmcphee' THEN 51
+            WHEN 'jlangus' THEN 52
+            WHEN 'garia' THEN 53
+            WHEN 'yflores' THEN 54
+            WHEN 'guest' THEN 55
+            WHEN 'jsantos' THEN 56
+            WHEN 'rgutierrez' THEN 57
+            WHEN 'meugene' THEN 58
+            WHEN 'jblack' THEN 59
+            WHEN 'lcruz' THEN 60
+            WHEN 'darencibia' THEN 61
+            WHEN 'aconzo' THEN 62
+            WHEN 'rperez' THEN 63
+            WHEN 'hmartinez' THEN 64
+            WHEN 'jalvarez' THEN 65
+            WHEN 'jcmilanez' THEN 66
+            WHEN 'jalvah' THEN 67
+            WHEN 'lleon' THEN 68
+            WHEN 'jnavarro' THEN 69
+            WHEN 'jperez' THEN 70
+            WHEN 'system' THEN 71
+            WHEN 'pnorbal' THEN 72
+            WHEN 'bgiron' THEN 73
+            WHEN 'jcarvahal' THEN 74
+            WHEN 'chernandez' THEN 75
+            WHEN 'javigutierrez' THEN 76
+            WHEN 'wmathurin' THEN 77
+            WHEN 'lsomoza' THEN 78
+            WHEN 'rplasencia' THEN 79
+            WHEN 'ifernandez' THEN 80
+            WHEN 'llarkins' THEN 81
+            WHEN 'dbatres' THEN 82
+            WHEN 'equintana' THEN 83
+            WHEN 'aaristizabal' THEN 84
+            WHEN 'rsilva' THEN 85
+            WHEN 'saristizabal' THEN 86
+            WHEN 'adavila' THEN 87
+            WHEN 'dfranco' THEN 88
+            WHEN 'pcamacho' THEN 89
+            WHEN 'scanelo' THEN 90
+            WHEN 'migration' THEN 91
+            WHEN 'javis' THEN 92
+            WHEN 'jvera' THEN 93
+            WHEN 'gdhoy' THEN 94
+            WHEN 'ajoseph' THEN 95
+            WHEN 'sarthur' THEN 96
+            WHEN 'mrios' THEN 97
+            WHEN 'jnunez' THEN 98
+            WHEN 'aegana' THEN 99
+            WHEN 'jdsanchez' THEN 100
+            WHEN 'cagrela' THEN 101
+            WHEN 'msanabria' THEN 102
+            WHEN 'jcohen' THEN 103
+            WHEN 'gojeda' THEN 104
+            WHEN 'jramos' THEN 105
+            WHEN 'kramirez' THEN 106
+            WHEN 'wmendoza' THEN 107
+            WHEN 'mgaillard' THEN 108
+            WHEN 'jmoreno' THEN 109
+            WHEN 'sochoa' THEN 110
+            WHEN 'acabrera' THEN 111
+            WHEN 'lsquillaro' THEN 112
+            WHEN 'ftorres' THEN 113
+            WHEN 'ddaniel' THEN 114
+            WHEN 'jmeneses' THEN 115
+            WHEN 'msalazar' THEN 116
+            WHEN 'yescalona' THEN 117
+            WHEN 'ebravo' THEN 118
+            WHEN 'aalbert' THEN 119
+            WHEN 'olopez' THEN 120
+            WHEN 'dreyes' THEN 121
+            WHEN 'kcharles' THEN 122
+            WHEN 'misaac' THEN 123
+            WHEN 'jmarin' THEN 124
+            WHEN 'jlores' THEN 125
+            WHEN 'sharris' THEN 126
+            WHEN 'orlandyc' THEN 127
+            WHEN 'ledward' THEN 128
+            WHEN 'cdreal' THEN 129
+            WHEN 'guillei' THEN 130
+            WHEN 'jboscan' THEN 131
+            WHEN 'lrodriguez' THEN 132
+            WHEN 'dcarmona' THEN 133
+            WHEN 'aurelianosq' THEN 134
+            WHEN 'erikv' THEN 135
+            WHEN 'jgamardo' THEN 136
+            WHEN 'dvalmont' THEN 137
+            WHEN 'javierperez' THEN 138
+            WHEN 'sbrown' THEN 139
+            WHEN 'lmendoza' THEN 140
+            WHEN 'valerisperez' THEN 141
+            WHEN 'rgonzalez' THEN 142
+            WHEN 'vgutierrez' THEN 143
+            WHEN 'amendoza' THEN 144
+            WHEN 'ashum' THEN 145
+            WHEN 'jpacheco' THEN 146
+            WHEN 'dachellfa' THEN 147
+            WHEN 'mbatres' THEN 148
+            WHEN 'bradley' THEN 149
+            WHEN 'roibas' THEN 150
+            WHEN 'diego' THEN 151
+            WHEN 'door' THEN 152
+            WHEN 'agustin' THEN 153
+            WHEN 'gonzalo' THEN 154
+            WHEN 'ttest' THEN 155
+            WHEN 'gretel' THEN 156
+            WHEN 'dprojex' THEN 157
+            WHEN 'dptest' THEN 158
+            WHEN 'leugene' THEN 161
+            WHEN 'npolius' THEN 162
+            WHEN 'isidonie' THEN 163
+            WHEN 'ejames' THEN 164
+            WHEN 'bduncan' THEN 165
+            WHEN 'lhippolyte' THEN 166
+            WHEN 'remmanuel' THEN 167
+            WHEN 'mcastro' THEN 168
+            WHEN 'rfelicien' THEN 169
+            ELSE NULL
+        END AS AlertDisabledByUserId,
+        DateDisabled as AlertDisabledDate,
+        TimeDisabled as AlertDisabledTime,
+        ReasonDisabled as AlertDisabledReason
     FROM source
 )
 SELECT * FROM transformed
