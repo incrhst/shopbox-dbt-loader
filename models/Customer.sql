@@ -1,6 +1,7 @@
 {{ config(
     materialized='table',
-    unique_key=['CustomerAgentPrefix', 'CustomerAccountNumber']
+    unique_key=['CustomerAgentPrefix', 'CustomerAccountNumber'],
+    full_refresh: true
 ) }}
 {% set colsql = 'COLLATE SQL_Latin1_General_CP1_CI_AS' %} -- Modern_Spanish_CI_AS
 
@@ -44,7 +45,7 @@ WITH source_customers AS (
         Secondary_DeliveryStreet2 {{ colsql }} AS CustomerSecDeliveryStreet2,
         Secondary_DeliveryCity {{ colsql }} AS CustomerSecondaryDeliveryCity,
         Primary_DeliveryCity {{ colsql }} AS CustomerPrimaryDeliveryCity,
-        IDNumber {{ colsql }} AS CustomerIdNumber,
+        IDNumber AS CustomerIdNumber,
         IDTypeID AS IdTypeId,
         CASE
             WHEN InsuranceAccepted {{ colsql }} = 'yes' THEN 1
