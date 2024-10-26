@@ -150,9 +150,9 @@ transformed AS (
         -- ---- is an area, box or shelf,
         -- ---- and sets it appropriately, otherwise NULL
         CASE
-            WHEN pd.LocationLastSeen LIKE '%AREA%' THEN 'AREA'
-            WHEN pd.LocationLastSeen LIKE '%BOX%' THEN 'BOX'
-            WHEN pd.LocationLastSeen LIKE '%SHELF%' THEN 'SHELF'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%AREA%' THEN 'AREA'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%BOX%' THEN 'BOX'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%SHELF%' THEN 'SHELF'
             ELSE NULL
         END {{ colsql }} AS PackageLocationLastStorageType,
 
