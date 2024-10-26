@@ -178,7 +178,7 @@ transformed AS (
         AND c.CustomerAgentPrefix {{ colsql }} = 'BSL'
     WHERE NOT EXISTS (
         SELECT 1 FROM existing_packages ep
-        WHERE ep.PackageNumber = pd.PackageNumber
+        WHERE ep.PackageNumber {{ colsql }} = pd.PackageNumber
     )
 )
 
