@@ -139,9 +139,9 @@ transformed AS (
                 THEN CAST(SUBSTRING(pd.LocationName, 9, 3) AS NUMERIC)
             WHEN pd.LocationName LIKE '%VF AREA%'
                 THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
-            WHEN pd.LocationName LIKE '%VF BOX%' THEN 5
+            WHEN pd.LocationName LIKE '%VF BOX%'
                 THEN CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC)
-            WHEN pd.LocationName LIKE '%VF SHELF%' THEN 5
+            WHEN pd.LocationName LIKE '%VF SHELF%'
                 THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
             ELSE NULL
         END AS PackageLocationLastStorageId,
