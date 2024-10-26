@@ -8,7 +8,7 @@ WITH source AS (
 
 -- Get valid packages from ImportPackage
 valid_packages AS (
-    SELECT DISTINCT 
+    SELECT DISTINCT
         PackageNumber {{ colsql }} as PackageNumber
     FROM {{ source('migration', 'ImportPackage') }}
 ),
@@ -16,33 +16,34 @@ valid_packages AS (
 -- First, map event descriptions to status names
 status_mapping AS (
     SELECT
-        s.package_number {{ colsql }} AS PackageNumber,
+        s.PackageNumber {{ colsql }} AS PackageNumber,
         CASE
-            WHEN event_description LIKE '%Delivered%' THEN 'Delivered'
-            WHEN event_description LIKE '%Detain at Custom%' THEN 'Detained'
-            WHEN event_description LIKE '%Transit%' THEN 'In Transit'
-            WHEN event_description LIKE '%Received at Ware%' THEN 'ReceivedWarehouse'
-            WHEN event_description LIKE '%Received from Shipper%' THEN 'Received'
-            WHEN event_description LIKE '%Scanned at Ware%' THEN 'ScannedWarehouse'
-            WHEN event_description LIKE '%Released from Custom%' THEN 'Released'
-            WHEN event_description LIKE '%Delivery Cancel%' THEN 'Delivery Cancelled'
-            WHEN event_description LIKE '%Out for Deliver%' THEN 'Out For Delivery'
-            WHEN event_description LIKE '%Scheduled for Deliver%' THEN 'ScheduledDelivery'
-            WHEN event_description LIKE '%Returned to Warehouse%' THEN 'Returned'
+            WHEN EventDescription LIKE '%Delivered%' THEN 'Delivered'
+            WHEN EventDescription LIKE '%Detain at Custom%' THEN 'Detained'
+            WHEN EventDescription LIKE '%Transit%' THEN 'In Transit'
+            WHEN EventDescription LIKE '%Received at Ware%' THEN 'ReceivedWarehouse'
+            WHEN EventDescription LIKE '%Received from Shipper%' THEN 'Received'
+            WHEN EventDescription LIKE '%Scanned at Ware%' THEN 'ScannedWarehouse'
+            WHEN EventDescription LIKE '%Released from Custom%' THEN 'Released'
+            WHEN EventDescription LIKE '%Delivery Cancel%' THEN 'Delivery Cancelled'
+            WHEN EventDescription LIKE '%Out for Deliver%' THEN 'Out For Delivery'
+            WHEN EventDescription LIKE '%Scheduled for Deliver%' THEN 'ScheduledDelivery'
+            WHEN EventDescription LIKE '%Returned to Warehouse%' THEN 'Returned'
             ELSE 'Received' -- Default value
         END AS PackageStatusName,
         -- Fixed datetime combination
         CASE
-            WHEN event_date IS NOT NULL AND event_time IS NOT NULL
-            THEN DATEADD(HOUR, DATEPART(HOUR, event_time),
-                 DATEADD(MINUTE, DATEPART(MINUTE, event_time),
-                 DATEADD(SECOND, DATEPART(SECOND, event_time), event_date)))
-            ELSE event_date
+            WHEN EventDate IS NOT NULL AND EventTime IS NOT NULL
+            CONVERT(DATETIME,
+                CONVERT(VARCHAR(10), pd.EventDate, 120) + ' ' +
+                CONVERT(VARCHAR(8), pd.EventTime, 108))
+            ELSE
+             NULL
         END AS EventDate
     FROM source s
     -- Only include events for packages that exist in ImportPackage
     INNER JOIN valid_packages vp
-        ON vp.PackageNumber = s.package_number {{ colsql }}
+        ON vp.PackageNumber = s.PackageNumber
 ),
 
 transformed AS (
@@ -60,14 +61,14 @@ transformed AS (
 {% if is_incremental() %}
 existing_events AS (
     SELECT
-        PackageNumber {{ colsql }} AS PackageNumber,  -- Added explicit column name
+        PackageNumber AS PackageNumber,  -- Added explicit column name
         PackageStatusName AS PackageStatusName,       -- Added explicit column name
         EventDate AS EventDate                        -- Added explicit column name
     FROM {{ this }}
 ),
 
 final AS (
-    SELECT DISTINCT 
+    SELECT DISTINCT
         t.PackageNumber,
         t.PackageStatusName,
         t.EventDate,

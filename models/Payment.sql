@@ -14,7 +14,7 @@ WITH source AS (
        amount as  PaymentAmount,
        InvoiceNumber,
        PaymentTime as PaymentCreatedDateTime,
-       Route as source_route,
+       Route,
        CreatedBy,  -- Assuming created_by is in the source data
        LocationId,
        PaymentMethod as PaymentMethodName
@@ -29,7 +29,7 @@ transformed AS (
         PaymentAmount,
         InvoiceNumber,
         PaymentCreatedDateTime,
-        CASE 
+        CASE
             WHEN created_by = 'bochilien' THEN 12
             WHEN created_by = 'cochilien' THEN 14
             WHEN created_by = 'dochilien' THEN 23
@@ -45,7 +45,6 @@ transformed AS (
             WHEN created_by = 'rfelicien' THEN 169
             ELSE NULL  -- Handle any unmapped or unexpected values
         END AS PaymentUserId,
-        PaymentComment as comment,
         CASE
             WHEN source_route = 'Castries Office' THEN 1
             WHEN source_route = 'Rodney Bay Office' THEN 263
@@ -67,4 +66,3 @@ transformed AS (
 )
 
 SELECT * FROM transformed;
-
