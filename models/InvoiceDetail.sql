@@ -11,7 +11,7 @@ with source as (
 transformed as (
     select
         -- Convert bigint to decimal(11,0)
-        cast(invoice_number as decimal(11,0)) as InvoiceNumber,
+        cast(InvoiceNumber as decimal(11,0)) as InvoiceNumber,
         -- Convert bigint to decimal(11,0)
         cast(id as decimal(11,0)) as InvoiceDetailId,
         -- Convert varchar(50) to nvarchar(100) with proper collation
@@ -33,7 +33,7 @@ final as (
     where not exists (
         select 1
         from {{ source('migration', 'invoicedetails_migrate') }} id
-        where cast(id.invoice_number as decimal(11,0)) = t.InvoiceNumber
+        where cast(id.InvoiceNumber as decimal(11,0)) = t.InvoiceNumber
         and cast(id.id as decimal(11,0)) = t.InvoiceDetailId
     )
 )
