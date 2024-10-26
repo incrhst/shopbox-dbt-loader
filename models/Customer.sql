@@ -9,7 +9,7 @@ WITH source_customers AS (
         AccountNumber AS CustomerAccountNumber,
         AgentPrefix {{ colsql }} AS CustomerAgentPrefix,
         CONCAT(AgentPrefix {{ colsql }},
-        AccountNumber {{ colsql }},
+        AccountNumber,
         ' ',
         FirstName {{ colsql }},
         ' ',
