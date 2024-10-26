@@ -33,10 +33,10 @@ status_mapping AS (
         END AS PackageStatusName,
         -- Fixed datetime combination
         CASE
-            WHEN EventDate IS NOT NULL AND EventTime IS NOT NULL
+            WHEN EventDate IS NOT NULL AND EventTime IS NOT NULL THEN
             CONVERT(DATETIME,
-                CONVERT(VARCHAR(10), pd.EventDate, 120) + ' ' +
-                CONVERT(VARCHAR(8), pd.EventTime, 108))
+                CONVERT(VARCHAR(10), s.EventDate, 120) + ' ' +
+                CONVERT(VARCHAR(8), s.EventTime, 108))
             ELSE
              NULL
         END AS EventDate
@@ -61,9 +61,9 @@ transformed AS (
 {% if is_incremental() %}
 existing_events AS (
     SELECT
-        PackageNumber AS PackageNumber,  -- Added explicit column name
-        PackageStatusName AS PackageStatusName,       -- Added explicit column name
-        EventDate AS EventDate                        -- Added explicit column name
+        PackageNumber,
+        PackageStatusName,
+        EventDate
     FROM {{ this }}
 ),
 
