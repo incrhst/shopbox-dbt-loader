@@ -10,6 +10,7 @@ sources:
       - name: ImportPackage
       - name: Invoice
       - name: InvoiceDetail
+      - name: InvoiceCredit
       - name: InvoiceDiscount
       - name: OtherCharge
       - name: PackagePackageEvent
@@ -20,12 +21,13 @@ sources:
       - name: User
       - name: alert_standalone_migrate
       - name: customer_standalone_migrate
-      - name: invoicemaster_key_migrate
+      - name: invoicecredit_key_migrate
       - name: invoicedetails_migrate
-      - name: payment_migrate
+      - name: invoicemaster_key_migrate
       - name: othercharge_migrate
       - name: package_key_migrate
       - name: packageevent_migrate
       - name: packagestatus_migrate
+      - name: payment_migrate
       - name: prealert_standalone_migrate
       - name: signups_standalone_migrate
