@@ -113,15 +113,15 @@ transformed AS (
      CASE 
     WHEN pd.LocationLastSeen LIKE '%RB AREA%' THEN 
         SELECT 
-            CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC) AS PackageLocationLastStorageId,
+            2 AS PackageLocationLastStorageId,
             'AREA' AS PackageLocationLastStorageType
     WHEN pd.LocationLastSeen LIKE '%RB BOX%' THEN 
         SELECT 
-            CAST(SUBSTRING(pd.LocationLastSeen, 7, 3) AS NUMERIC) AS PackageLocationLastStorageId,
+            2 AS PackageLocationLastStorageId,
             'BOX' AS PackageLocationLastStorageType
     WHEN pd.LocationLastSeen LIKE '%RB SHELF%' THEN 
         SELECT 
-            CAST(SUBSTRING(pd.LocationLastSeen, 9, 3) AS NUMERIC) AS PackageLocationLastStorageId,
+            2 AS PackageLocationLastStorageId,
             'SHELF' AS PackageLocationLastStorageType
      END
     CASE 
