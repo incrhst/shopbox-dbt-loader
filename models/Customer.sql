@@ -3,75 +3,53 @@
     unique_key=['CustomerAgentPrefix', 'CustomerAccountNumber'],
     full_refresh=true
 ) }}
-{% set colsql = 'COLLATE SQL_Latin1_General_CP1_CI_AS' %} -- Modern_Spanish_CI_AS
 
 WITH source_customers AS (
     SELECT DISTINCT
         AccountNumber AS CustomerAccountNumber,
-        AgentPrefix {{ colsql }} AS CustomerAgentPrefix,
-        CONCAT(AgentPrefix {{ colsql }},
-        AccountNumber,
-        ' ',
-        FirstName {{ colsql }},
-        ' ',
-        LastName) AS CustomerName,
-        Title {{ colsql }} AS CustomerTitle,
-        FirstName {{ colsql }} AS CustomerFirstName,
+        AgentPrefix AS CustomerAgentPrefix,
+        CONCAT(AgentPrefix, AccountNumber, ' ', FirstName, ' ', LastName) AS CustomerName,
+        Title AS CustomerTitle,
+        FirstName AS CustomerFirstName,
         '1900-01-01' AS CustomerBirthDate,
         ' ' AS CustomerImageProfile,
-        LastName {{ colsql }} AS CustomerLastName,
+        LastName AS CustomerLastName,
         DateStarted AS CustomerStartedDate,
-        CASE
-            WHEN HasContact = 'yes' THEN 1
-            WHEN HasContact = 'no' THEN 0
-            ELSE 0
-        END AS CustomerHasContact,  -- Updated AvailableSaturday mapping
-        Password {{ colsql }} AS CustomerPassword,
-        AccountTypeID {{ colsql }} AS AccountTypeId,
-        Email {{ colsql }} AS CustomerEmail,
-        Company {{ colsql }} AS CompanyName,
-        Tel1 {{ colsql }} AS CustomerMainPhone,
-        Tel2  {{ colsql }} AS CustomerSecondPhone,
-        Tel3  {{ colsql }} AS CustomerThirdPhone,
-        Work_tel {{ colsql }} AS CustomerWorkPhone,
-        Fax {{ colsql }} AS CustomerFax,
+        CASE WHEN HasContact = 'yes' THEN 1 ELSE 0 END AS CustomerHasContact,
+        Password AS CustomerPassword,
+        AccountTypeID AS AccountTypeId,
+        Email AS CustomerEmail,
+        Company AS CompanyName,
+        Tel1 AS CustomerMainPhone,
+        Tel2 AS CustomerSecondPhone,
+        Tel3 AS CustomerThirdPhone,
+        Work_tel AS CustomerWorkPhone,
+        Fax AS CustomerFax,
         RouteID AS CustomerDefaultRouteId,
-        ResidentialStreet1 {{ colsql }} AS CustomerResidentialStreet1,
-        ResidentialStreet2 {{ colsql }}  AS CustomerResidentialStreet2,
-        ResidentialCity {{ colsql }} AS CustomerResidentialCity,
-        Primary_DeliveryStreet1 {{ colsql }} AS CustomerPrimaryDeliveryStreet1,
-        Primary_DeliveryStreet2 {{ colsql }} AS CustomerPrimaryDeliveryStreet2,
-        Secondary_DeliveryStreet1 {{ colsql }} AS CustomerSecDeliveryStreet1,
-        Secondary_DeliveryStreet2 {{ colsql }} AS CustomerSecDeliveryStreet2,
-        Secondary_DeliveryCity {{ colsql }} AS CustomerSecondaryDeliveryCity,
-        Primary_DeliveryCity {{ colsql }} AS CustomerPrimaryDeliveryCity,
+        ResidentialStreet1 AS CustomerResidentialStreet1,
+        ResidentialStreet2 AS CustomerResidentialStreet2,
+        ResidentialCity AS CustomerResidentialCity,
+        Primary_DeliveryStreet1 AS CustomerPrimaryDeliveryStreet1,
+        Primary_DeliveryStreet2 AS CustomerPrimaryDeliveryStreet2,
+        Secondary_DeliveryStreet1 AS CustomerSecDeliveryStreet1,
+        Secondary_DeliveryStreet2 AS CustomerSecDeliveryStreet2,
+        Secondary_DeliveryCity AS CustomerSecondaryDeliveryCity,
+        Primary_DeliveryCity AS CustomerPrimaryDeliveryCity,
         IDNumber AS CustomerIdNumber,
         IDTypeID AS IdTypeId,
-        CASE
-            WHEN InsuranceAccepted {{ colsql }} = 'yes' THEN 1
-            WHEN InsuranceAccepted {{ colsql }} = 'no' THEN 0
-        END AS CustomerInsuranceAccepted,
-        CASE
-            WHEN CreditCardOnFile {{ colsql }} = 'yes' THEN 1
-            WHEN CreditCardOnFile {{ colsql }} = 'no' THEN 0
-        END AS CustomerCreditCardOnFile,
-        CASE
-            WHEN Active {{ colsql }} = 'yes' THEN 1
-            WHEN Active {{ colsql }} = 'no' THEN 0
-        END AS CustomerIsActive,  -- Updated AvailableSaturday mapping
-        CASE
-            WHEN AvailableSaturday {{ colsql }} = 'yes' THEN 1
-            WHEN AvailableSaturday {{ colsql }} = 'no' THEN 0
-        END AS CustomerAvailableSaturday,  -- Updated AvailableSaturday mapping
-       '' AS CustomerReference  -- Using COALESCE to set to '' if missing
+        CASE WHEN InsuranceAccepted = 'yes' THEN 1 ELSE 0 END AS CustomerInsuranceAccepted,
+        CASE WHEN CreditCardOnFile = 'yes' THEN 1 ELSE 0 END AS CustomerCreditCardOnFile,
+        CASE WHEN Active = 'yes' THEN 1 ELSE 0 END AS CustomerIsActive,
+        CASE WHEN AvailableSaturday = 'yes' THEN 1 ELSE 0 END AS CustomerAvailableSaturday,
+        '' AS CustomerReference
     FROM {{ source('migration', 'customer_standalone_migrate') }}
 ),
 
 existing_customers AS (
     SELECT
         CustomerAccountNumber,
-        CustomerAgentPrefix {{ colsql }} AS CustomerAgentPrefix,
-        '' AS CustomerReference  -- Match the source column with COALESCE
+        CustomerAgentPrefix,
+        '' AS CustomerReference
     FROM {{ source('migration', 'Customer') }}
 ),
 
@@ -107,18 +85,16 @@ missing_customers AS (
         sc.CustomerPrimaryDeliveryStreet1,
         sc.CustomerPrimaryDeliveryStreet2,
         sc.CustomerPrimaryDeliveryCity,
-        sc.CustomerSecondaryDeliveryCity,
         sc.CustomerSecDeliveryStreet1,
-        sc.CustomerPassword,
-        sc.AccountTypeId,
         sc.CustomerSecDeliveryStreet2,
-        sc.CustomerReference  -- Include the corrected column name here
+        sc.CustomerSecondaryDeliveryCity,
+        sc.CustomerReference
     FROM source_customers sc
     LEFT JOIN existing_customers ec
-       ON sc.CustomerAccountNumber  = ec.CustomerAccountNumber
-          AND sc.CustomerAgentPrefix {{ colsql }} = ec.CustomerAgentPrefix
-       WHERE ec.CustomerAccountNumber IS NULL
-         AND ec.CustomerAgentPrefix IS NULL
+        ON sc.CustomerAccountNumber = ec.CustomerAccountNumber
+        AND sc.CustomerAgentPrefix = ec.CustomerAgentPrefix
+    WHERE ec.CustomerAccountNumber IS NULL
+    AND ec.CustomerAgentPrefix IS NULL
 )
 
 SELECT
@@ -157,11 +133,10 @@ SELECT
     mc.CustomerSecDeliveryStreet1,
     mc.CustomerSecDeliveryStreet2,
     mc.CustomerSecondaryDeliveryCity,
-    mc.CustomerReference,  -- Include the corrected column name here
+    mc.CustomerReference,
     758 AS CustomerCountryId
-
 FROM missing_customers mc
 
 {% if is_incremental() %}
-  WHERE mc.CustomerAccountNumber NOT IN (SELECT CustomerAccountNumber FROM {{ this }})
+WHERE mc.CustomerAccountNumber NOT IN (SELECT CustomerAccountNumber FROM {{ this }})
 {% endif %}
