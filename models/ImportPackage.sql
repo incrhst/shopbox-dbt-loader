@@ -66,7 +66,7 @@ transformed AS (
         pd.agent_prefix AS CustomerAgentPrefix,
         pd.location_id AS PackageLocationLastSeenId,
         LEFT(pd.notes, 255) {{ colsql }} AS PackageNotes,
-        packed_in_shipment AS PackagePackedInShipment,
+        pd.packed_in_shipment AS PackagePackedInShipment,
         CASE
             WHEN pd.PackageStatus = 'Delivered' THEN 'Delivered'
             WHEN pd.PackageStatus LIKE '%Scheduled for Delivery%' THEN 'ScheduledForDelivery'
