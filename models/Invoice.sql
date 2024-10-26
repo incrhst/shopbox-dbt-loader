@@ -23,10 +23,10 @@ source as (
         s.*,
         -- Add row number to pick the most recent record for duplicates
         row_number() over (
-            partition by InvoiceNumber
+            partition by InvoiceNumber {{ colsql }}
             order by
                 InvoiceDate desc,
-                case when InvoiceStatus = 'PAID' then 1 else 2 end  -- Prefer PAID status
+                case when InvoiceStatus {{ colsql }} = 'PAID' then 1 else 2 end  -- Prefer PAID status
         ) as row_num
     from {{ source('migration', 'invoicemaster_key_migrate') }} s
 ),
@@ -48,7 +48,7 @@ transformed as (
         s.PackageNumber AS PackageNumber,
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
-        CASE Route
+        CASE Route {{ colsql }}
             WHEN 'Castries Office' THEN 1
             WHEN 'Rodney Bay Office' THEN 263
             WHEN 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
@@ -65,7 +65,7 @@ transformed as (
             ELSE NULL  -- Fallback for unmatched routes
         END AS RouteId,
         case
-            when s.InvoiceStatus = 'PAID' then 'Paid'
+            when s.InvoiceStatus {{ colsql }} = 'PAID' then 'Paid'
             else 'Unpaid'
         end {{ colsql }} as InvoiceStatus,
         upper(trim(s.route)) {{ colsql }} as RouteName,
@@ -73,9 +73,9 @@ transformed as (
         s.InvoicePieces AS InvoicePieces,
         case when s.Printed = 1 then 1 else 0 end as InvoicePrinted,
         case when s.emailed = '1' then 1 else 0 end as InvoiceEmailed,
-        case when s.Uploaded = 'no' then 0 else 1 end as InvoiceUploaded,
-        case when s.AllowEmail = 'no' then 0 else 1 end as InvoiceAllowEmail,
-        case when s.AllowPrint = 'no' then 0 else 1 end as InvoiceAllowPrint,
+        case when s.Uploaded {{ colsql }} = 'no' then 0 else 1 end as InvoiceUploaded,
+        case when s.AllowEmail {{ colsql }} = 'no' then 0 else 1 end as InvoiceAllowEmail,
+        case when s.AllowPrint {{ colsql }} = 'no' then 0 else 1 end as InvoiceAllowPrint,
         s.TimePaidOff AS InvoicePaidOffTime,
         s.TimePaidOff AS InvoicePaidOffDate,
         1 as InvoiceUserId
@@ -114,11 +114,11 @@ final as (
 -- Add safety check for duplicates before final output
 select f.*
 from final f
-where PackageNumber is not null
+where PackageNumber {{ colsql }} is not null
 {% if is_incremental() %}
 and not exists (
     select 1
     from {{ this }} existing
-    where existing.PackageNumber = f.PackageNumber
+    where existing.PackageNumber {{ colsql }} = f.PackageNumber
 )
 {% endif %}

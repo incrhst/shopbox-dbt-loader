@@ -34,8 +34,8 @@ transformed AS (
     SELECT
         pd.PackageNumber {{ colsql }} AS PackageNumber,
         pd.InternationalTrackingNumber {{ colsql }} AS PackageInternationalTrackingNu,
-        COALESCE(pd.prealert_tracking_number, '') AS PackagePrealertTrackingNumber,
-        COALESCE(pd.SupplierInvoiceNumber, '') AS PackageSupplierInvoiceNumber,
+        COALESCE(pd.prealert_tracking_number {{ colsql }}, '') AS PackagePrealertTrackingNumber,
+        COALESCE(pd.SupplierInvoiceNumber {{ colsql }}, '') AS PackageSupplierInvoiceNumber,
         pd.PackageDescription {{ colsql }} AS PackageDescription,
         pd.TariffDescription {{ colsql }} AS PackageTariffDescription,
         CASE
