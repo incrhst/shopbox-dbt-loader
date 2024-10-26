@@ -154,7 +154,7 @@ transformed AS (
             WHEN pd.LocationLastSeen LIKE '%BOX%' THEN 'BOX'
             WHEN pd.LocationLastSeen LIKE '%SHELF%' THEN 'SHELF'
             ELSE NULL
-        END AS {{ colsql }} PackageLocationLastStorageType,
+        END {{ colsql }} AS PackageLocationLastStorageType,
 
         NULL AS RepositoryNumber,
         NULL AS RepositoryType,
