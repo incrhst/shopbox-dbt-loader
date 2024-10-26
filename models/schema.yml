@@ -51,7 +51,6 @@ models:
               field: CourierName
 
     dependencies:
-      - ref('Customer')
       - ref('Supplier')
       - ref('Courier')
       - ref('User')
@@ -194,9 +193,6 @@ models:
         description: "Foreign key to Customer"
         tests:
           - not_null
-
-    dependencies:
-      - ref('Customer')
 
   - name: SignUp
     description: "Customer sign-up records"
