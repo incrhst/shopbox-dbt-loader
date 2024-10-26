@@ -48,7 +48,7 @@ transformed AS (
         END AS PackagePartMultiplePiece,
         pd.TotalPieces AS PackageTotalPieces,
         CASE
-            WHEN pd.Consolidation = 'no' THEN 0
+            WHEN pd.Consolidation {{ colsql }} = 'no' THEN 0
             ELSE 1
         END AS PackageConsolidation,
         pd.ConsolidationPackageNumber {{ colsql }} AS PackageConsolidationPackageNum,
@@ -93,7 +93,7 @@ transformed AS (
         END {{ colsql }} AS PackageActualStatusName,
         SUBSTRING(pd.PackageNumber, 5, 12) {{ colsql }} AS PackageAirwayBillNumber,
         CASE
-            WHEN LEFT(pd.PackageNumber, 3) = 'OCE' THEN 1
+            WHEN LEFT(pd.PackageNumber, 3) {{ colsql }} = 'OCE' THEN 1
             ELSE 0
         END AS PackageOcean,
         pd.created_at AS PackageCreationDate,
