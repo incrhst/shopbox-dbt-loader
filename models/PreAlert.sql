@@ -13,25 +13,26 @@ WITH source AS (
 ),
 transformed AS (
     SELECT
-        CAST(COALESCE(international_tracking_number, '') as nvarchar(50)) as PreAlertInternationalTrackingN,
-        CAST(COALESCE(account_number, 0) as int) as CustomerAccountNumber,
-        CAST(COALESCE(value, 0) as money) as PreAlertAmount,
-        CAST(COALESCE(description, '') as nvarchar(200)) as PreAlertDescription,
-        CAST(COALESCE(notes, '') as nvarchar(max)) as PreAlertNotes,
-        CAST(CASE 
-            WHEN displayed = 'yes' THEN 1
+        AccountNumber as CustomerAccountNumber
+        CAST(COALESCE(LEFT(AgentPrefix, 3), '') as nvarchar(3)) as CustomerAgentPrefix,
+        Value as PreAlertAmount,
+        Shipper as PreAlertCourierName,
+        -- dates must be correct !!!!!!
+        CAST(created_at as datetime) as PreAlertCreatedAt,
+        CAST(DateSet as datetime) as PreAlertDateSet,
+        CAST(COALESCE(Description, '') as nvarchar(200)) as PreAlertDescription,
+        CAST(CASE
+            WHEN Displayed = 'yes' THEN 1
             ELSE 0
         END as bit) as PreAlertDisplayed,
-        CAST(COALESCE(date_set, GETDATE()) as datetime) as PreAlertDateSet,
-        CAST(COALESCE(last_update, GETDATE()) as datetime) as PreAlertLastUpdate,
-        CAST(COALESCE(TRY_CAST(user_id as int), 0) as int) as PreAlertUserId,
-        CAST(COALESCE(created_at, GETDATE()) as datetime) as PreAlertCreatedAt,
+        CAST(COALESCE(TRY_CAST(UserId as int), 0) as int) as PreAlertUserId,
+        CAST(COALESCE(InternationalTrackingNumber, '') as nvarchar(50)) as PreAlertInternationalTrackingN,
         CAST(NULL as varbinary(max)) as PreAlertInvoicePDF, -- Not in source, setting NULL
-        CAST(COALESCE(LEFT(agent_prefix, 3), '') as nvarchar(3)) as CustomerAgentPrefix,
+        CAST(COALESCE(LastUpdate, GETDATE()) as datetime) as PreAlertLastUpdate,
+        CAST(COALESCE(Notes, '') as nvarchar(-1)) as PreAlertNotes, -- nvarchar(-1) means nvarchar(max) in sqlserver
         CAST(0 as bit) as PreAlertSentAMAD, -- Not in source, defaulting to 0
-        CAST(COALESCE(shipper, '') as nvarchar(100)) as PreAlertCourierName,
-        CAST(COALESCE(supplier, '') as nvarchar(100)) as PreAlertSupplierName,
-        CAST(COALESCE(NULL, 'N') as nchar(1)) as PreAlertStatus -- Not in source, defaulting to 'N'
+        CAST(COALESCE(NULL, 'N') as nchar(1)) as PreAlertStatus -- Not in source, defaulting to 'N',
+        CAST(COALESCE(Supplier, '') as nvarchar(100)) as PreAlertSupplierName,
     FROM source
 )
 SELECT * FROM transformed
