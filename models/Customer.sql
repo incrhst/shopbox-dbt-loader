@@ -19,7 +19,7 @@ WITH source_customers AS (
         DateStarted AS CustomerStartedDate,
         CASE WHEN HasContact {{ colsql }} = 'yes' THEN 1 ELSE 0 END AS CustomerHasContact,
         Password {{ colsql }} AS CustomerPassword,
-        AccountTypeID {{ colsql }} AS AccountTypeId,
+        -- AccountTypeID {{ colsql }} AS AccountTypeId,
         Email {{ colsql }} AS CustomerEmail,
         Company {{ colsql }} AS CompanyName,
         Tel1 {{ colsql }} AS CustomerMainPhone,
