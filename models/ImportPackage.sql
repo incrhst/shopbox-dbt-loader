@@ -63,7 +63,7 @@ transformed AS (
             CONVERT(VARCHAR(10), pd.DateFirstSeen, 120) + ' ' +
             CONVERT(VARCHAR(8), pd.TimeFirstSeen, 108)) AS PackageFirstSeenDateTime,
         pd.AccountNumber AS CustomerAccountNumber,
-        pd.agent_prefix AS CustomerAgentPrefix,
+        pd.AgentPrefix AS CustomerAgentPrefix,
         CASE
             WHEN pd.LocationLastSeen = 'Castries' THEN 1
             WHEN pd.LocationLastSeen = 'Head Office' THEN 1
