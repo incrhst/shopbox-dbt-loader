@@ -9,7 +9,7 @@
 
 -- First, let's identify any duplicates in the source
 with source_duplicates as (
-    select 
+    select
         InvoiceNumber,
         count(*) as duplicate_count
     from {{ source('migration', 'invoicemaster_key_migrate') }}
@@ -18,12 +18,12 @@ with source_duplicates as (
 ),
 
 source as (
-    select 
+    select
         s.*,
         -- Add row number to pick the most recent record for duplicates
         row_number() over (
-            partition by InvoiceNumber 
-            order by 
+            partition by InvoiceNumber
+            order by
                 InvoiceDate desc,
                 case when InvoiceStatus = 'PAID' then 1 else 2 end  -- Prefer PAID status
         ) as row_num
@@ -47,20 +47,20 @@ transformed as (
         s.PackageNumber AS PackageNumber,
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
-        CASE 
-            WHEN source_route = 'Castries Office' THEN 1
-            WHEN source_route = 'Rodney Bay Office' THEN 263
-            WHEN source_route = 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
-            WHEN source_route = 'Vieux Fort Office' THEN 316
-            WHEN source_route = 'Castries' THEN 253
-            WHEN source_route = 'Dennery' THEN 254
-            WHEN source_route = 'Micoud' THEN 255
-            WHEN source_route = 'Vieux Fort' THEN 256
-            WHEN source_route = 'Gros Islet' THEN 252
-            WHEN source_route = 'Soufriere' THEN 258
-            WHEN source_route = 'Anse La Raye' THEN 260
-            WHEN source_route = 'Choiseul' THEN 257
-            WHEN source_route = 'Canaries' THEN 259
+        CASE Route
+            WHEN = 'Castries Office' THEN 1
+            WHEN = 'Rodney Bay Office' THEN 263
+            WHEN = 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
+            WHEN = 'Vieux Fort Office' THEN 316
+            WHEN = 'Castries' THEN 253
+            WHEN = 'Dennery' THEN 254
+            WHEN = 'Micoud' THEN 255
+            WHEN = 'Vieux Fort' THEN 256
+            WHEN = 'Gros Islet' THEN 252
+            WHEN = 'Soufriere' THEN 258
+            WHEN = 'Anse La Raye' THEN 260
+            WHEN = 'Choiseul' THEN 257
+            WHEN = 'Canaries' THEN 259
             ELSE NULL  -- Fallback for unmatched routes
         END AS RouteId,
         case
@@ -117,7 +117,7 @@ where InvoiceNumber is not null
      and InvoiceNumber <> 'HAWB076791650000'
 {% if is_incremental() %}
 and not exists (
-    select 1 
+    select 1
     from {{ this }} existing
     where existing.InvoiceNumber = f.InvoiceNumber
 )
