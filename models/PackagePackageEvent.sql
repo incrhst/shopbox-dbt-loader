@@ -1,4 +1,7 @@
-{{ config(materialized='incremental') }}
+{{ config(
+materialized='incremental',
+incremental_strategy='merge'
+) }}
 
 {% set colsql = 'COLLATE Modern_Spanish_CI_AS' %}
 
