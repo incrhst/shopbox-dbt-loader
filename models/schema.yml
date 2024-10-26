@@ -5,7 +5,7 @@ models:
     description: "Customer master data with composite key of agent prefix and account number"
     config:
       materialized: incremental
-      unique_key: ['CustomerAgentPrefix','CustomerAccountNumber']
+      unique_key: ["CustomerAgentPrefix", "CustomerAccountNumber"]
     columns:
       - name: CustomerAgentPrefix
         description: "Agent prefix part of the composite key"
@@ -27,14 +27,7 @@ models:
         tests:
           - unique
           - not_null
-      
-      - name: CustomerAccountNumber
-        description: "Account number linking to Customer table"
-        tests:
-          - relationships:
-              to: ref('Customer')
-              field: CustomerAccountNumber
-      
+
       - name: UserId
         description: "Foreign key to User table"
         tests:
@@ -42,21 +35,21 @@ models:
           - relationships:
               to: ref('User')
               field: UserId
-      
+
       - name: SupplierName
         description: "Foreign key to Supplier table"
         tests:
           - relationships:
               to: ref('Supplier')
               field: SupplierName
-      
+
       - name: CourierName
         description: "Foreign key to Courier table"
         tests:
           - relationships:
               to: ref('Courier')
               field: CourierName
-    
+
     dependencies:
       - ref('Customer')
       - ref('Supplier')
@@ -67,7 +60,7 @@ models:
     description: "Package event history tracking"
     config:
       materialized: incremental
-      unique_key: ['PackageNumber','PackageStatusName','EventDate']
+      unique_key: ["PackageNumber", "PackageStatusName", "EventDate"]
     columns:
       - name: PackageNumber
         tests:
@@ -75,15 +68,15 @@ models:
           - relationships:
               to: ref('ImportPackage')
               field: PackageNumber
-      
+
       - name: PackageStatusName
         tests:
           - not_null
-      
+
       - name: EventDate
         tests:
           - not_null
-    
+
     dependencies:
       - ref('ImportPackage')
 
@@ -98,7 +91,7 @@ models:
         tests:
           - unique
           - not_null
-      
+
       - name: PackageNumber
         description: "Foreign key to ImportPackage"
         tests:
@@ -106,7 +99,7 @@ models:
           - relationships:
               to: ref('ImportPackage')
               field: PackageNumber
-    
+
     dependencies:
       - ref('ImportPackage')
 
@@ -114,7 +107,7 @@ models:
     description: "Invoice line items"
     config:
       materialized: incremental
-      unique_key: ['InvoiceNumber','InvoiceDetailId']
+      unique_key: ["InvoiceNumber", "InvoiceDetailId"]
     columns:
       - name: InvoiceNumber
         tests:
@@ -122,11 +115,11 @@ models:
           - relationships:
               to: ref('Invoice')
               field: InvoiceNumber
-      
+
       - name: InvoiceDetailId
         tests:
           - not_null
-    
+
     dependencies:
       - ref('Invoice')
 
@@ -141,7 +134,7 @@ models:
         tests:
           - unique
           - not_null
-      
+
       - name: InvoiceNumber
         description: "Foreign key to Invoice"
         tests:
@@ -149,12 +142,12 @@ models:
           - relationships:
               to: ref('Invoice')
               field: InvoiceNumber
-      
+
       - name: PaymentAmount
         description: "Amount of the payment"
         tests:
           - not_null
-    
+
     dependencies:
       - ref('Invoice')
 
@@ -196,12 +189,12 @@ models:
         description: "Foreign key to Customer"
         tests:
           - not_null
-      
+
       - name: CustomerAgentPrefix
         description: "Foreign key to Customer"
         tests:
           - not_null
-    
+
     dependencies:
       - ref('Customer')
 
@@ -216,12 +209,12 @@ models:
         tests:
           - unique
           - not_null
-      
+
       - name: SignUpAccountNumber
         description: "Account number assigned during sign-up"
         tests:
           - not_null
-      
+
       - name: SignUpEmail
         description: "Primary email address"
         tests:
