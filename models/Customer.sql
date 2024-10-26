@@ -69,7 +69,7 @@ WITH source_customers AS (
 existing_customers AS (
     SELECT
         CustomerAccountNumber,
-        CustomerAgentPrefix {{ colsql }},
+        CustomerAgentPrefix,
         '' AS CustomerReference  -- Match the source column with COALESCE
     FROM {{ source('migration', 'Customer') }}
 ),
