@@ -6,9 +6,14 @@
 
 WITH source_customers AS (
     SELECT DISTINCT
-        AccountNumber AS CustomerAccountNumber,
-        AgentPrefix AS CustomerAgentPrefix,
-        CONCAT(AgentPrefix, AccountNumber, ' ', FirstName, ' ', LastName) AS CustomerName,
+        AccountNumber {{ colsql }} AS CustomerAccountNumber,
+        AgentPrefix {{ colsql }} AS CustomerAgentPrefix,
+        CONCAT(AgentPrefix {{ colsql }},
+        AccountNumber {{ colsql }},
+        ' ',
+        FirstName {{ colsql }},
+        ' ',
+        LastName) AS CustomerName,
         Title {{ colsql }} AS CustomerTitle,
         FirstName {{ colsql }} AS CustomerFirstName,
         '1900-01-01' AS CustomerBirthDate,
@@ -20,8 +25,8 @@ WITH source_customers AS (
             WHEN HasContact = 'no' THEN 0
             ELSE 0
         END AS CustomerHasContact,  -- Updated AvailableSaturday mapping
-        Password AS CustomerPassword,
-        AccountTypeID AS AccountTypeId,
+        Password {{ colsql }} AS CustomerPassword,
+        AccountTypeID {{ colsql }} AS AccountTypeId,
         Email {{ colsql }} AS CustomerEmail,
         Company {{ colsql }} AS CompanyName,
         Tel1 {{ colsql }} AS CustomerMainPhone,
@@ -42,20 +47,20 @@ WITH source_customers AS (
         IDNumber {{ colsql }} AS CustomerIdNumber,
         IDTypeID AS IdTypeId,
         CASE
-            WHEN InsuranceAccepted = 'yes' THEN 1
-            WHEN InsuranceAccepted = 'no' THEN 0
+            WHEN InsuranceAccepted {{ colsql }} = 'yes' THEN 1
+            WHEN InsuranceAccepted {{ colsql }} = 'no' THEN 0
         END AS CustomerInsuranceAccepted,
         CASE
-            WHEN CreditCardOnFile = 'yes' THEN 1
-            WHEN CreditCardOnFile = 'no' THEN 0
+            WHEN CreditCardOnFile {{ colsql }} = 'yes' THEN 1
+            WHEN CreditCardOnFile {{ colsql }} = 'no' THEN 0
         END AS CustomerCreditCardOnFile,
         CASE
-            WHEN Active = 'yes' THEN 1
-            WHEN Active = 'no' THEN 0
+            WHEN Active {{ colsql }} = 'yes' THEN 1
+            WHEN Active {{ colsql }} = 'no' THEN 0
         END AS CustomerIsActive,  -- Updated AvailableSaturday mapping
         CASE
-            WHEN AvailableSaturday = 'yes' THEN 1
-            WHEN AvailableSaturday = 'no' THEN 0
+            WHEN AvailableSaturday {{ colsql }} = 'yes' THEN 1
+            WHEN AvailableSaturday {{ colsql }} = 'no' THEN 0
         END AS CustomerAvailableSaturday,  -- Updated AvailableSaturday mapping
        '' AS CustomerReference  -- Using COALESCE to set to '' if missing
     FROM {{ source('migration', 'customer_standalone_migrate') }}
@@ -63,8 +68,8 @@ WITH source_customers AS (
 
 existing_customers AS (
     SELECT
-        CustomerAccountNumber,
-        CustomerAgentPrefix,
+        CustomerAccountNumber {{ colsql }},
+        CustomerAgentPrefix {{ colsql }},
         '' AS CustomerReference  -- Match the source column with COALESCE
     FROM {{ source('migration', 'Customer') }}
 ),
