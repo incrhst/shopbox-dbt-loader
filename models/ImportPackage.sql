@@ -59,8 +59,8 @@ transformed AS (
         pd.TotalWeight AS PackageTotalWeight,
         pd.shipper {{ colsql }} AS PackageShipper,
         pd.PackageValue AS PackageValue,
-        CONVERT(DATETIME, 
-    CONVERT(VARCHAR(10), pd.DateFirstSeen, 120) + ' ' + 
+        CONVERT(DATETIME,
+    CONVERT(VARCHAR(10), pd.DateFirstSeen, 120) + ' ' +
     CONVERT(VARCHAR(8), pd.TimeFirstSeen, 108) AS PackageFirstSeenDateTime,
         pd.AccountNumber AS CustomerAccountNumber,
         pd.agent_prefix AS CustomerAgentPrefix,
@@ -110,43 +110,43 @@ transformed AS (
           WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
           WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
         ELSE NULL AS PackageLocationLastStorageId,
-     CASE 
-    WHEN pd.LocationLastSeen LIKE '%RB AREA%' THEN 
-        SELECT 
+     CASE
+    WHEN pd.LocationLastSeen LIKE '%RB AREA%' THEN
+        SELECT
             2 AS PackageLocationLastStorageId,
             'AREA' AS PackageLocationLastStorageType
-    WHEN pd.LocationLastSeen LIKE '%RB BOX%' THEN 
-        SELECT 
+    WHEN pd.LocationLastSeen LIKE '%RB BOX%' THEN
+        SELECT
             2 AS PackageLocationLastStorageId,
             'BOX' AS PackageLocationLastStorageType
-    WHEN pd.LocationLastSeen LIKE '%RB SHELF%' THEN 
-        SELECT 
+    WHEN pd.LocationLastSeen LIKE '%RB SHELF%' THEN
+        SELECT
             2 AS PackageLocationLastStorageId,
             'SHELF' AS PackageLocationLastStorageType
      END
-    CASE 
-    WHEN pd.LocationName LIKE '%VF AREA%' THEN 
-        SELECT 
-            CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC) AS StorageId,
-            'AREA' AS StorageType
-    WHEN pd.LocationName LIKE '%VF BOX%' THEN 
-        SELECT 
-            CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC) AS StorageId,
-            'BOX' AS StorageType
-    WHEN pd.LocationName LIKE '%VF SHELF%' THEN 
-        SELECT 
-            CAST(SUBSTRING(pd.LocationName, 9, 3) AS NUMERIC) AS StorageId,
-            'SHELF' AS StorageType
-    ELSE 
-        SELECT 
+    CASE
+    WHEN pd.LocationName LIKE '%VF AREA%' THEN
+        SELECT
+            5 AS PackageLastLocationStorageId,
+            'AREA' AS PackageLocationLastStorageType
+    WHEN pd.LocationName LIKE '%VF BOX%' THEN
+        SELECT
+            5 AS StorageId,
+            'BOX' AS PackageLocationLastStorageType
+    WHEN pd.LocationName LIKE '%VF SHELF%' THEN
+        SELECT
+            5 AS StorageId,
+            'SHELF' AS PackageLocationLastStorageType
+    ELSE
+        SELECT
             1 AS LocationId,
-            NULL AS StorageId,
+            NULL AS PackageLocationLastStorageId,
             NULL AS PackageLocationLastStorageType
       END
-        
+
         NULL AS RepositoryNumber,
         NULL AS RepositoryType,
-       
+
         '' AS PackageInvoicePDF,
         0 AS PackageMarked,
         '' AS PackageTransactionIdentifier,
@@ -162,8 +162,8 @@ transformed AS (
         END AS AvailableSaturdayFlag
     FROM list_of_existing_package_numbers s
     JOIN package_data pd ON pd.package_number {{ colsql }} = s.PackageNumber
-    JOIN customer_data c 
-        ON pd.account_number = c.CustomerAccountNumber 
+    JOIN customer_data c
+        ON pd.account_number = c.CustomerAccountNumber
         AND c.CustomerAgentPrefix = 'BSL'
     WHERE NOT EXISTS (
         SELECT 1 FROM existing_packages ep
