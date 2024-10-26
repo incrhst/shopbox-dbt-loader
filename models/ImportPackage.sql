@@ -90,7 +90,7 @@ transformed AS (
         12 AS UserId,
         1 AS PackageDuration,
         NULL AS ManifestId,
-        pd.total_weight AS PackageWeight,
+        pd.TotalWeight AS PackageWeight,
         NULL AS PackageLocationLastStorageType,
         NULL AS RepositoryNumber,
         NULL AS RepositoryType,
