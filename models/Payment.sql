@@ -60,7 +60,7 @@ transformed AS (
             WHEN source_route = 'Canaries' THEN 259
             ELSE NULL  -- Fallback for unmatched routes
         END AS LocationId,
-        PaymentMethod as PaymentMethodName
+        PaymentMethodName
     FROM source
 )
 

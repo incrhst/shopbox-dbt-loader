@@ -26,8 +26,8 @@ WITH source AS (
         Fax as SignUpFax,
         CONCAT(
             COALESCE(Primary_DeliveryStreet1, ''),
-            CASE WHEN Primary_DeliveryStreet2 IS NOT NULL THEN ' ' + PrimaryDelivery_Street2 ELSE '' END,
-            CASE WHEN Primary_DeliveryCity IS NOT NULL THEN ' ' + PrimaryDelivery_City ELSE '' END
+            CASE WHEN Primary_DeliveryStreet2 IS NOT NULL THEN ' ' + Primary_DeliveryStreet2 ELSE '' END,
+            CASE WHEN Primary_DeliveryCity IS NOT NULL THEN ' ' + Primary_DeliveryCity ELSE '' END
         ) as SignUpPrimaryDeliveryAddress,
         insuranceaccepted as SignUpInsuranceAccepted,
         1 as SignUpAccountTypeId,
