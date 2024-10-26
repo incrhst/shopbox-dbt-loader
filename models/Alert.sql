@@ -185,7 +185,7 @@ transformed AS (
             WHEN 'mcastro' THEN 168
             WHEN 'rfelicien' THEN 169
             ELSE NULL
-        END AS UserId
+        END AS UserId,
         DateSet as AlertStartDate,
         CASE DisabledBy
             WHEN 'mcastelnoble' THEN 1
