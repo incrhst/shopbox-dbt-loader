@@ -114,7 +114,7 @@ missing_customers AS (
         sc.CustomerReference  -- Include the corrected column name here
     FROM source_customers sc
     LEFT JOIN existing_customers ec
-       ON sc.CustomerAccountNumber {{ colsql }} = ec.CustomerAccountNumber
+       ON sc.CustomerAccountNumber  = ec.CustomerAccountNumber
           AND sc.CustomerAgentPrefix {{ colsql }} = ec.CustomerAgentPrefix
        WHERE ec.CustomerAccountNumber IS NULL
          AND ec.CustomerAgentPrefix IS NULL
