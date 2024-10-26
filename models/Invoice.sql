@@ -16,7 +16,7 @@ with transformed as (
         s.PackageNumber {{ colsql }},
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
-        CASE Route {{ colsql }}
+        CASE s.Route {{ colsql }}
             WHEN 'Castries Office' THEN 1
             WHEN 'Rodney Bay Office' THEN 263
             WHEN 'Hold at Office' THEN 263
