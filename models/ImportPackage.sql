@@ -62,7 +62,7 @@ transformed AS (
         CONVERT(DATETIME, 
     CONVERT(VARCHAR(10), pd.DateFirstSeen, 120) + ' ' + 
     CONVERT(VARCHAR(8), pd.TimeFirstSeen, 108) AS PackageFirstSeenDateTime,
-        pd.AccountNumbers AS CustomerAccountNumber,
+        pd.AccountNumber AS CustomerAccountNumber,
         pd.agent_prefix AS CustomerAgentPrefix,
         pd.location_id AS PackageLocationLastSeenId,
         LEFT(pd.notes, 255) {{ colsql }} AS PackageNotes,
