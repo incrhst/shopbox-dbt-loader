@@ -1,7 +1,8 @@
 {{
     config(
         materialized='incremental',
-        unique_key='InvoiceNumber'
+        unique_key='InvoiceNumber',
+        incremental_strategy='merge'
     )
 }}
 
