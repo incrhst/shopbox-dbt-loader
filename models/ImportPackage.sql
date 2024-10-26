@@ -53,7 +53,7 @@ transformed AS (
         END AS PackageConsolidation,
         pd.ConsolidationPackageNumber {{ colsql }} AS PackageConsolidationPackageNum,
         pd.length AS PackageLength,
-        pd.location_id AS PackageLocationId,
+        -- pd.location_id AS PackageLocationId,
         pd.width AS PackageWidth,
         pd.height AS PackageHeight,
         pd.TotalWeight AS PackageTotalWeight,
