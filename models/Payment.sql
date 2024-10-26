@@ -28,20 +28,20 @@ transformed AS (
         PaymentAmount,
         InvoiceNumber,
         PaymentCreatedDateTime,
-        CASE
-            WHEN created_by = 'bochilien' THEN 12
-            WHEN created_by = 'cochilien' THEN 14
-            WHEN created_by = 'dochilien' THEN 23
-            WHEN created_by = 'aochilien' THEN 28
-            WHEN created_by = 'sjan' THEN 40
-            WHEN created_by = 'ddaniel' THEN 114
-            WHEN created_by = 'aalbert' THEN 119
-            WHEN created_by = 'sharris' THEN 126
-            WHEN created_by = 'ledward' THEN 128
-            WHEN created_by = 'dvalmont' THEN 137
-            WHEN created_by = 'sbrown' THEN 139
-            WHEN created_by = 'remmanuel' THEN 167
-            WHEN created_by = 'rfelicien' THEN 169
+        CASE CreatedBy
+            WHEN = 'bochilien' THEN 12
+            WHEN = 'cochilien' THEN 14
+            WHEN = 'dochilien' THEN 23
+            WHEN = 'aochilien' THEN 28
+            WHEN = 'sjan' THEN 40
+            WHEN = 'ddaniel' THEN 114
+            WHEN = 'aalbert' THEN 119
+            WHEN = 'sharris' THEN 126
+            WHEN = 'ledward' THEN 128
+            WHEN = 'dvalmont' THEN 137
+            WHEN = 'sbrown' THEN 139
+            WHEN = 'remmanuel' THEN 167
+            WHEN = 'rfelicien' THEN 169
             ELSE NULL  -- Handle any unmapped or unexpected values
         END AS PaymentUserId,
         CASE

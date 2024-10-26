@@ -31,7 +31,7 @@ transformed AS (
         CAST(COALESCE(LastUpdate, GETDATE()) as datetime) as PreAlertLastUpdate,
         CAST(COALESCE(Notes, '') as nvarchar(-1)) as PreAlertNotes, -- nvarchar(-1) means nvarchar(max) in sqlserver
         CAST(0 as bit) as PreAlertSentAMAD, -- Not in source, defaulting to 0
-        NULL as PreAlertStatus -- Not in source, defaulting to 'NULL',
+        NULL as PreAlertStatus, -- Not in source, defaulting to 'NULL'
         CAST(COALESCE(Supplier, '') as nvarchar(100)) as PreAlertSupplierName
     FROM source
 )

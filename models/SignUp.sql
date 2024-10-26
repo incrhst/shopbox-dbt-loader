@@ -25,9 +25,9 @@ WITH source AS (
         Tel3 as SignUpThirdPhone,
         Fax as SignUpFax,
         CONCAT(
-            COALESCE(PrimaryDeliveryStreet1, ''),
-            CASE WHEN PrimaryDeliveryStreet2 IS NOT NULL THEN ' ' + primarydeliverystreet2 ELSE '' END,
-            CASE WHEN PrimaryDeliveryCity IS NOT NULL THEN ' ' + primarydeliverycity ELSE '' END
+            COALESCE(Primary_DeliveryStreet1, ''),
+            CASE WHEN Primary_DeliveryStreet2 IS NOT NULL THEN ' ' + primarydeliverystreet2 ELSE '' END,
+            CASE WHEN Primary_DeliveryCity IS NOT NULL THEN ' ' + primarydeliverycity ELSE '' END
         ) as SignUpPrimaryDeliveryAddress,
         insuranceaccepted as SignUpInsuranceAccepted,
         1 as SignUpAccountTypeId,
