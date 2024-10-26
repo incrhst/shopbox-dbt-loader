@@ -13,7 +13,7 @@ with source_duplicates as (
         InvoiceNumber,
         count(*) as duplicate_count
     from {{ source('migration', 'invoicemaster_key_migrate') }}
-    group by invoice_number
+    group by InvoiceNumber
     having count(*) > 1
 ),
 
@@ -79,7 +79,7 @@ transformed as (
         s.TimePaidOff AS InvoicePaidOffDate,
         1 as InvoiceUserId
     from source s
-    where s.row_num = 1  -- Take only the first row for each invoice_number
+    where s.row_num = 1  -- Take only the first row for each InvoiceNumber
     and not exists (
         select 1
         from existing_invoices e
