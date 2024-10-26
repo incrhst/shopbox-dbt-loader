@@ -4,43 +4,45 @@
     full_refresh=true
 ) }}
 
+{% set colsql = 'COLLATE SQL_Latin1_General_CP1_CI_AS' %} -- Modern_Spanish_CI_AS
+
 WITH source_customers AS (
     SELECT DISTINCT
         AccountNumber AS CustomerAccountNumber,
-        AgentPrefix AS CustomerAgentPrefix,
-        CONCAT(AgentPrefix, AccountNumber, ' ', FirstName, ' ', LastName) AS CustomerName,
-        Title AS CustomerTitle,
-        FirstName AS CustomerFirstName,
+        AgentPrefix {{ colsql }} AS CustomerAgentPrefix,
+        CONCAT(AgentPrefix {{ colsql }}, AccountNumber, ' ', FirstName {{ colsql }}, ' ', LastName {{ colsql }}) AS CustomerName,
+        Title {{ colsql }} AS CustomerTitle,
+        FirstName {{ colsql }} AS CustomerFirstName,
         '1900-01-01' AS CustomerBirthDate,
         ' ' AS CustomerImageProfile,
-        LastName AS CustomerLastName,
+        LastName {{ colsql }} AS CustomerLastName,
         DateStarted AS CustomerStartedDate,
-        CASE WHEN HasContact = 'yes' THEN 1 ELSE 0 END AS CustomerHasContact,
-        Password AS CustomerPassword,
-        AccountTypeID AS AccountTypeId,
-        Email AS CustomerEmail,
-        Company AS CompanyName,
-        Tel1 AS CustomerMainPhone,
-        Tel2 AS CustomerSecondPhone,
-        Tel3 AS CustomerThirdPhone,
-        Work_tel AS CustomerWorkPhone,
-        Fax AS CustomerFax,
+        CASE WHEN HasContact {{ colsql }} = 'yes' THEN 1 ELSE 0 END AS CustomerHasContact,
+        Password {{ colsql }} AS CustomerPassword,
+        AccountTypeID {{ colsql }} AS AccountTypeId,
+        Email {{ colsql }} AS CustomerEmail,
+        Company {{ colsql }} AS CompanyName,
+        Tel1 {{ colsql }} AS CustomerMainPhone,
+        Tel2 {{ colsql }} AS CustomerSecondPhone,
+        Tel3 {{ colsql }} AS CustomerThirdPhone,
+        Work_tel {{ colsql }} AS CustomerWorkPhone,
+        Fax {{ colsql }} AS CustomerFax,
         RouteID AS CustomerDefaultRouteId,
-        ResidentialStreet1 AS CustomerResidentialStreet1,
-        ResidentialStreet2 AS CustomerResidentialStreet2,
-        ResidentialCity AS CustomerResidentialCity,
-        Primary_DeliveryStreet1 AS CustomerPrimaryDeliveryStreet1,
-        Primary_DeliveryStreet2 AS CustomerPrimaryDeliveryStreet2,
-        Secondary_DeliveryStreet1 AS CustomerSecDeliveryStreet1,
-        Secondary_DeliveryStreet2 AS CustomerSecDeliveryStreet2,
-        Secondary_DeliveryCity AS CustomerSecondaryDeliveryCity,
-        Primary_DeliveryCity AS CustomerPrimaryDeliveryCity,
+        ResidentialStreet1 {{ colsql }} AS CustomerResidentialStreet1,
+        ResidentialStreet2 {{ colsql }} AS CustomerResidentialStreet2,
+        ResidentialCity {{ colsql }} AS CustomerResidentialCity,
+        Primary_DeliveryStreet1 {{ colsql }} AS CustomerPrimaryDeliveryStreet1,
+        Primary_DeliveryStreet2 {{ colsql }} AS CustomerPrimaryDeliveryStreet2,
+        Secondary_DeliveryStreet1 {{ colsql }} AS CustomerSecDeliveryStreet1,
+        Secondary_DeliveryStreet2 {{ colsql }} AS CustomerSecDeliveryStreet2,
+        Secondary_DeliveryCity {{ colsql }} AS CustomerSecondaryDeliveryCity,
+        Primary_DeliveryCity {{ colsql }} AS CustomerPrimaryDeliveryCity,
         IDNumber AS CustomerIdNumber,
         IDTypeID AS IdTypeId,
-        CASE WHEN InsuranceAccepted = 'yes' THEN 1 ELSE 0 END AS CustomerInsuranceAccepted,
-        CASE WHEN CreditCardOnFile = 'yes' THEN 1 ELSE 0 END AS CustomerCreditCardOnFile,
-        CASE WHEN Active = 'yes' THEN 1 ELSE 0 END AS CustomerIsActive,
-        CASE WHEN AvailableSaturday = 'yes' THEN 1 ELSE 0 END AS CustomerAvailableSaturday,
+        CASE WHEN InsuranceAccepted {{ colsql }} = 'yes' THEN 1 ELSE 0 END AS CustomerInsuranceAccepted,
+        CASE WHEN CreditCardOnFile {{ colsql }} = 'yes' THEN 1 ELSE 0 END AS CustomerCreditCardOnFile,
+        CASE WHEN Active {{ colsql }} = 'yes' THEN 1 ELSE 0 END AS CustomerIsActive,
+        CASE WHEN AvailableSaturday {{ colsql }} = 'yes' THEN 1 ELSE 0 END AS CustomerAvailableSaturday,
         '' AS CustomerReference
     FROM {{ source('migration', 'customer_standalone_migrate') }}
 ),
@@ -48,7 +50,7 @@ WITH source_customers AS (
 existing_customers AS (
     SELECT
         CustomerAccountNumber,
-        CustomerAgentPrefix,
+        CustomerAgentPrefix {{ colsql }} AS CustomerAgentPrefix,
         '' AS CustomerReference
     FROM {{ source('migration', 'Customer') }}
 ),
@@ -92,7 +94,7 @@ missing_customers AS (
     FROM source_customers sc
     LEFT JOIN existing_customers ec
         ON sc.CustomerAccountNumber = ec.CustomerAccountNumber
-        AND sc.CustomerAgentPrefix = ec.CustomerAgentPrefix
+        AND sc.CustomerAgentPrefix {{ colsql }} = ec.CustomerAgentPrefix
     WHERE ec.CustomerAccountNumber IS NULL
     AND ec.CustomerAgentPrefix IS NULL
 )
