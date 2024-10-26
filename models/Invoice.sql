@@ -48,19 +48,19 @@ transformed as (
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
         CASE Route
-            WHEN = 'Castries Office' THEN 1
-            WHEN = 'Rodney Bay Office' THEN 263
-            WHEN = 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
-            WHEN = 'Vieux Fort Office' THEN 316
-            WHEN = 'Castries' THEN 253
-            WHEN = 'Dennery' THEN 254
-            WHEN = 'Micoud' THEN 255
-            WHEN = 'Vieux Fort' THEN 256
-            WHEN = 'Gros Islet' THEN 252
-            WHEN = 'Soufriere' THEN 258
-            WHEN = 'Anse La Raye' THEN 260
-            WHEN = 'Choiseul' THEN 257
-            WHEN = 'Canaries' THEN 259
+            WHEN 'Castries Office' THEN 1
+            WHEN 'Rodney Bay Office' THEN 263
+            WHEN 'Hold at Office' THEN 263  -- Assuming 'Hold at Office' means 'Rodney Bay Office'
+            WHEN 'Vieux Fort Office' THEN 316
+            WHEN 'Castries' THEN 253
+            WHEN 'Dennery' THEN 254
+            WHEN 'Micoud' THEN 255
+            WHEN 'Vieux Fort' THEN 256
+            WHEN 'Gros Islet' THEN 252
+            WHEN 'Soufriere' THEN 258
+            WHEN 'Anse La Raye' THEN 260
+            WHEN 'Choiseul' THEN 257
+            WHEN 'Canaries' THEN 259
             ELSE NULL  -- Fallback for unmatched routes
         END AS RouteId,
         case
