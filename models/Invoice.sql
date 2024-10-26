@@ -114,7 +114,6 @@ final as (
 select f.*
 from final f
 where InvoiceNumber is not null
-     and InvoiceNumber <> 'HAWB076791650000'
 {% if is_incremental() %}
 and not exists (
     select 1
