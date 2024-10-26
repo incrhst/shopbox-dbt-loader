@@ -132,17 +132,17 @@ transformed AS (
         -- ---- it sets it to NULL if no shelf, box or area is declared
         CASE
             WHEN pd.LocationLastSeen LIKE '%RB AREA%'
-                THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
+                THEN CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC)
             WHEN pd.LocationLastSeen LIKE '%RB BOX%'
-                THEN CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC)
+                THEN CAST(SUBSTRING(pd.LocationLastSeen, 7, 3) AS NUMERIC)
             WHEN pd.LocationLastSeen LIKE '%RB SHELF%'
-                THEN CAST(SUBSTRING(pd.LocationName, 9, 3) AS NUMERIC)
-            WHEN pd.LocationName LIKE '%VF AREA%'
-                THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
-            WHEN pd.LocationName LIKE '%VF BOX%'
-                THEN CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC)
-            WHEN pd.LocationName LIKE '%VF SHELF%'
-                THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
+                THEN CAST(SUBSTRING(pd.LocationLastSeen, 9, 3) AS NUMERIC)
+            WHEN pd.LocationLastSeen LIKE '%VF AREA%'
+                THEN CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC)
+            WHEN pd.LocationLastSeen LIKE '%VF BOX%'
+                THEN CAST(SUBSTRING(pd.LocationLastSeen, 7, 3) AS NUMERIC)
+            WHEN pd.LocationLastSeen LIKE '%VF SHELF%'
+                THEN CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC)
             ELSE NULL
         END AS PackageLocationLastStorageId,
 
