@@ -175,7 +175,7 @@ transformed AS (
     JOIN package_data pd ON pd.PackageNumber {{ colsql }} = s.PackageNumber
     JOIN customer_data c
         ON pd.AccountNumber = c.CustomerAccountNumber
-        AND c.CustomerAgentPrefix = 'BSL'
+        AND c.CustomerAgentPrefix {{ colsql }} = 'BSL'
     WHERE NOT EXISTS (
         SELECT 1 FROM existing_packages ep
         WHERE ep.PackageNumber = pd.PackageNumber
