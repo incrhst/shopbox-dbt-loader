@@ -23,7 +23,7 @@ source as (
         s.*,
         -- Add row number to pick the most recent record for duplicates
         row_number() over (
-            partition by InvoiceNumber {{ colsql }}
+            partition by InvoiceNumber
             order by
                 InvoiceDate desc,
                 case when InvoiceStatus {{ colsql }} = 'PAID' then 1 else 2 end  -- Prefer PAID status
