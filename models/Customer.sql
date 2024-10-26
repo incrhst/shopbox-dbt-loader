@@ -2,19 +2,20 @@
     materialized='table',
     unique_key=['CustomerAgentPrefix', 'CustomerAccountNumber']
 ) }}
+{% set colsql = 'COLLATE Modern_Spanish_CI_AS' %}
 
 WITH source_customers AS (
     SELECT DISTINCT
         AccountNumber AS CustomerAccountNumber,
         AgentPrefix AS CustomerAgentPrefix,
         CONCAT(AgentPrefix, AccountNumber, ' ', FirstName, ' ', LastName) AS CustomerName,
-        Title AS CustomerTitle,
-        FirstName AS CustomerFirstName,
+        Title {{ colsql }} AS CustomerTitle,
+        FirstName {{ colsql }} AS CustomerFirstName,
         '1900-01-01' AS CustomerBirthDate,
         ' ' AS CustomerImageProfile,
-        LastName AS CustomerLastName,
+        LastName {{ colsql }} AS CustomerLastName,
         DateStarted AS CustomerStartedDate,
-        CASE 
+        CASE
             WHEN HasContact = 'yes' THEN 1
             WHEN HasContact = 'no' THEN 0
             ELSE 0
@@ -22,7 +23,7 @@ WITH source_customers AS (
         Password AS CustomerPassword,
         AccountTypeID AS AccountTypeId,
         Email AS CustomerEmail,
-        Company AS CompanyName,
+        Company {{ colsql }} AS CompanyName,
         Tel1 AS CustomerMainPhone,
         Tel2 AS CustomerSecondPhone,
         Tel3 AS CustomerThirdPhone,
@@ -48,11 +49,11 @@ WITH source_customers AS (
             WHEN CreditCardOnFile = 'yes' THEN 1
             WHEN CreditCardOnFile = 'no' THEN 0
         END AS CustomerCreditCardOnFile,
-        CASE 
+        CASE
             WHEN Active = 'yes' THEN 1
             WHEN Active = 'no' THEN 0
         END AS CustomerIsActive,  -- Updated AvailableSaturday mapping
-        CASE 
+        CASE
             WHEN AvailableSaturday = 'yes' THEN 1
             WHEN AvailableSaturday = 'no' THEN 0
         END AS CustomerAvailableSaturday,  -- Updated AvailableSaturday mapping
@@ -65,7 +66,7 @@ existing_customers AS (
         CustomerAccountNumber,
         CustomerAgentPrefix,
         '' AS CustomerReference  -- Match the source column with COALESCE
-    FROM {{ source('migration', 'Customer') }} 
+    FROM {{ source('migration', 'Customer') }}
 ),
 
 missing_customers AS (
@@ -158,4 +159,3 @@ FROM missing_customers mc
 {% if is_incremental() %}
   WHERE mc.CustomerAccountNumber NOT IN (SELECT CustomerAccountNumber FROM {{ this }})
 {% endif %}
-
