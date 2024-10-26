@@ -21,7 +21,7 @@ customer_data AS (
         CustomerAccountNumber,
         CustomerAgentPrefix,
         CustomerAvailableSaturday
-    FROM {{ ref('Customer') }}
+    FROM {{ source(migration_schema, 'Customer') }}
 ),
 existing_packages AS (
     {% if is_incremental() %}
