@@ -39,11 +39,11 @@ transformed AS (
         pd.PackageDescription {{ colsql }} AS PackageDescription,
         pd.TariffDescription {{ colsql }} AS PackageTariffDescription,
         CASE
-            WHEN pd.hazmat = 'yes' THEN 1
+            WHEN pd.hazmat {{ colsql }} = 'yes' THEN 1
             ELSE 0
         END AS PackageHazmat,
         CASE
-            WHEN pd.Consolidation = 'no' THEN 0
+            WHEN pd.Consolidation {{ colsql }} = 'no' THEN 0
             ELSE 1
         END AS PackagePartMultiplePiece,
         pd.TotalPieces AS PackageTotalPieces,
@@ -65,30 +65,30 @@ transformed AS (
         pd.AccountNumber AS CustomerAccountNumber,
         pd.agent_prefix {{ colsql }} AS CustomerAgentPrefix,
         CASE
-            WHEN pd.LocationLastSeen = 'Castries' THEN 1
-            WHEN pd.LocationLastSeen = 'Head Office' THEN 1
-            WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
-            WHEN pd.LocationLastSeen = 'RB BOX 10' THEN 2
-            WHEN pd.LocationLastSeen = 'Vieux Fort Office' THEN 5
-            WHEN pd.LocationLastSeen = 'Miami' THEN 6
-            WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
-            WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Castries' THEN 1
+            WHEN pd.LocationLastSeen {{ colsql }}  = 'Head Office' THEN 1
+            WHEN pd.LocationLastSeen {{ colsql }}  = 'Rodney Bay Office' THEN 2
+            WHEN pd.LocationLastSeen {{ colsql }}  = 'RB BOX 10' THEN 2
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Vieux Fort Office' THEN 5
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Miami' THEN 6
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Front Counter' THEN 6
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Local Warehouse' THEN 7
             ELSE NULL
         END AS PackageLocationLastSeenId,
         LEFT(pd.notes, 255) {{ colsql }} AS PackageNotes,
         pd.packed_in_shipment AS PackagePackedInShipment,
         CASE
-            WHEN pd.PackageStatus = 'Delivered' THEN 'Delivered'
-            WHEN pd.PackageStatus LIKE '%Scheduled for Delivery%' THEN 'ScheduledForDelivery'
-            WHEN pd.PackageStatus = 'Received At Warehouse' THEN 'ReceivedWareHouse'
-            WHEN pd.PackageStatus = 'Scanned at Warehouse' THEN 'ScannedWareHouse'
-            WHEN pd.PackageStatus = 'Detained at Customs' THEN 'Detained'
-            WHEN pd.PackageStatus = 'Delivery Cancelled' THEN 'DeliveryCancelled'
-            WHEN pd.PackageStatus LIKE '%Transit%' THEN 'In Transit'
-            WHEN pd.PackageStatus = 'Returned to Warehouse' THEN 'Returned'
-            WHEN pd.PackageStatus = 'Out for Delivery' THEN 'OutForDelivery'
-            WHEN pd.PackageStatus = 'Received from shipper' THEN 'Received'
-            WHEN pd.PackageStatus = 'Released from Customs' THEN 'Released'
+            WHEN pd.PackageStatus {{ colsql }} = 'Delivered' THEN 'Delivered'
+            WHEN pd.PackageStatus {{ colsql }} LIKE '%Scheduled for Delivery%' THEN 'ScheduledForDelivery'
+            WHEN pd.PackageStatus {{ colsql }} = 'Received At Warehouse' THEN 'ReceivedWareHouse'
+            WHEN pd.PackageStatus {{ colsql }} = 'Scanned at Warehouse' THEN 'ScannedWareHouse'
+            WHEN pd.PackageStatus {{ colsql }} = 'Detained at Customs' THEN 'Detained'
+            WHEN pd.PackageStatus {{ colsql }} = 'Delivery Cancelled' THEN 'DeliveryCancelled'
+            WHEN pd.PackageStatus {{ colsql }} LIKE '%Transit%' THEN 'In Transit'
+            WHEN pd.PackageStatus {{ colsql }} = 'Returned to Warehouse' THEN 'Returned'
+            WHEN pd.PackageStatus {{ colsql }} = 'Out for Delivery' THEN 'OutForDelivery'
+            WHEN pd.PackageStatus {{ colsql }} = 'Received from shipper' THEN 'Received'
+            WHEN pd.PackageStatus {{ colsql }} = 'Released from Customs' THEN 'Released'
             ELSE 'Received'
         END {{ colsql }} AS PackageActualStatusName,
         SUBSTRING(pd.PackageNumber, 5, 12) {{ colsql }} AS PackageAirwayBillNumber,
@@ -112,15 +112,15 @@ transformed AS (
         -- ---- Castries:1,Head Office/Front Counter:1, Rodney Bay/RB:2
         -- ---- Vieux Fort/VF:5, Miami:6
         CASE
-            WHEN pd.LocationLastSeen = 'Castries' THEN 1
-            WHEN pd.LocationLastSeen = 'Front Counter' THEN 1
-            WHEN pd.LocationLastSeen = 'Head Office' THEN 1
-            WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
-            WHEN pd.LocationLastSeen LIKE '%RB %' THEN 2
-            WHEN pd.LocationLastSeen LIKE '%Vieux Fort%' THEN 5
-            WHEN pd.LocationLastSeen LIKE '%VF %' THEN 5
-            WHEN pd.LocationLastSeen = 'Miami' THEN 6
-            WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Castries' THEN 1
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Front Counter' THEN 1
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Head Office' THEN 1
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Rodney Bay Office' THEN 2
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%RB %' THEN 2
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%Vieux Fort%' THEN 5
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%VF %' THEN 5
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Miami' THEN 6
+            WHEN pd.LocationLastSeen {{ colsql }} = 'Local Warehouse' THEN 7
             ELSE NULL
         END AS PackageLocationId,
 
@@ -131,17 +131,17 @@ transformed AS (
         -- ---- Storage Id of 2
         -- ---- it sets it to NULL if no shelf, box or area is declared
         CASE
-            WHEN pd.LocationLastSeen LIKE '%RB AREA%'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%RB AREA%'
                 THEN CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC)
-            WHEN pd.LocationLastSeen LIKE '%RB BOX%'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%RB BOX%'
                 THEN CAST(SUBSTRING(pd.LocationLastSeen, 7, 3) AS NUMERIC)
-            WHEN pd.LocationLastSeen LIKE '%RB SHELF%'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%RB SHELF%'
                 THEN CAST(SUBSTRING(pd.LocationLastSeen, 9, 3) AS NUMERIC)
-            WHEN pd.LocationLastSeen LIKE '%VF AREA%'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%VF AREA%'
                 THEN CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC)
-            WHEN pd.LocationLastSeen LIKE '%VF BOX%'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%VF BOX%'
                 THEN CAST(SUBSTRING(pd.LocationLastSeen, 7, 3) AS NUMERIC)
-            WHEN pd.LocationLastSeen LIKE '%VF SHELF%'
+            WHEN pd.LocationLastSeen {{ colsql }} LIKE '%VF SHELF%'
                 THEN CAST(SUBSTRING(pd.LocationLastSeen, 8, 3) AS NUMERIC)
             ELSE NULL
         END AS PackageLocationLastStorageId,
@@ -172,7 +172,7 @@ transformed AS (
             ELSE 0
         END AS AvailableSaturdayFlag
     FROM list_of_existing_package_numbers s
-    JOIN package_data pd ON pd.PackageNumber = s.PackageNumber
+    JOIN package_data pd ON pd.PackageNumber {{ colsql }} = s.PackageNumber
     JOIN customer_data c
         ON pd.AccountNumber = c.CustomerAccountNumber
         AND c.CustomerAgentPrefix = 'BSL'
