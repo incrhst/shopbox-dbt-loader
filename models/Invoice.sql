@@ -13,7 +13,7 @@ with transformed as (
     select
         s.InvoiceNumber,
         s.InvoiceDate,
-        s.PackageNumber,
+        s.PackageNumber {{ colsql }},
         s.Consignee {{ colsql }} as InvoiceConsignee,
         s.Shipper {{ colsql }} as InvoiceShipper,
         CASE Route {{ colsql }}
@@ -71,4 +71,3 @@ select
     NULL AS UnKnownId,
     t.InvoiceUserId
 from transformed t
-where t.PackageNumber {{ colsql }} is not null
