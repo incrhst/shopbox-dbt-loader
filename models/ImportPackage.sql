@@ -60,20 +60,21 @@ transformed AS (
         pd.shipper {{ colsql }} AS PackageShipper,
         pd.PackageValue AS PackageValue,
         CONVERT(DATETIME,
-    CONVERT(VARCHAR(10), pd.DateFirstSeen, 120) + ' ' +
-    CONVERT(VARCHAR(8), pd.TimeFirstSeen, 108) AS PackageFirstSeenDateTime,
+            CONVERT(VARCHAR(10), pd.DateFirstSeen, 120) + ' ' +
+            CONVERT(VARCHAR(8), pd.TimeFirstSeen, 108)) AS PackageFirstSeenDateTime,
         pd.AccountNumber AS CustomerAccountNumber,
         pd.agent_prefix AS CustomerAgentPrefix,
-      CASE
-          WHEN pd.LocationLastSeen = 'Castries' THEN 1
-          WHEN pd.LocationLastSeen = 'Head Office' THEN 1
-          WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
-          WHEN pd.LocationLastSeen = 'RB BOX 10' THEN 2
-          WHEN pd.LocationLastSeen = 'Vieux Fort Office' THEN 5
-          WHEN pd.LocationLastSeen = 'Miami' THEN 6
-          WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
-          WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
-      ELSE NULL AS PackageLocationLastSeenId,
+        CASE
+            WHEN pd.LocationLastSeen = 'Castries' THEN 1
+            WHEN pd.LocationLastSeen = 'Head Office' THEN 1
+            WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
+            WHEN pd.LocationLastSeen = 'RB BOX 10' THEN 2
+            WHEN pd.LocationLastSeen = 'Vieux Fort Office' THEN 5
+            WHEN pd.LocationLastSeen = 'Miami' THEN 6
+            WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
+            WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
+            ELSE NULL
+        END AS PackageLocationLastSeenId,
         LEFT(pd.notes, 255) {{ colsql }} AS PackageNotes,
         pd.packed_in_shipment AS PackagePackedInShipment,
         CASE
@@ -100,53 +101,63 @@ transformed AS (
         1 AS PackageDuration,
         NULL AS ManifestId,
         pd.TotalWeight AS PackageWeight,
+
+        -- == In the next steps, we the
+        -- == Packages Location Id, Storage Id and Storage Type
+        -- == Location Id means which location is it at
+        -- == Storage Id is only relevant if it is on a shelf or in a box or area
+        -- == Storage Type allows us to know if it is a shelf,box or area
+
+        -- ---- This step derives the Location Id based on whether it is
+        -- ---- Castries:1,Head Office/Front Counter:1, Rodney Bay/RB:2
+        -- ---- Vieux Fort/VF:5, Miami:6
         CASE
-          WHEN pd.LocationLastSeen = 'Castries' THEN 1
-          WHEN pd.LocationLastSeen = 'Head Office' THEN 1
-          WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
-          WHEN pd.LocationLastSeen = 'RB BOX 10' THEN 2
-          WHEN pd.LocationLastSeen = 'Vieux Fort Office' THEN 5
-          WHEN pd.LocationLastSeen = 'Miami' THEN 6
-          WHEN pd.LocationLastSeen = 'Front Counter' THEN 6
-          WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
-        ELSE NULL AS PackageLocationLastStorageId,
-     CASE
-    WHEN pd.LocationLastSeen LIKE '%RB AREA%' THEN
-        SELECT
-            2 AS PackageLocationLastStorageId,
-            'AREA' AS PackageLocationLastStorageType
-    WHEN pd.LocationLastSeen LIKE '%RB BOX%' THEN
-        SELECT
-            2 AS PackageLocationLastStorageId,
-            'BOX' AS PackageLocationLastStorageType
-    WHEN pd.LocationLastSeen LIKE '%RB SHELF%' THEN
-        SELECT
-            2 AS PackageLocationLastStorageId,
-            'SHELF' AS PackageLocationLastStorageType
-     END
-    CASE
-    WHEN pd.LocationName LIKE '%VF AREA%' THEN
-        SELECT
-            5 AS PackageLastLocationStorageId,
-            'AREA' AS PackageLocationLastStorageType
-    WHEN pd.LocationName LIKE '%VF BOX%' THEN
-        SELECT
-            5 AS StorageId,
-            'BOX' AS PackageLocationLastStorageType
-    WHEN pd.LocationName LIKE '%VF SHELF%' THEN
-        SELECT
-            5 AS StorageId,
-            'SHELF' AS PackageLocationLastStorageType
-    ELSE
-        SELECT
-            1 AS LocationId,
-            NULL AS PackageLocationLastStorageId,
-            NULL AS PackageLocationLastStorageType
-      END
+            WHEN pd.LocationLastSeen = 'Castries' THEN 1
+            WHEN pd.LocationLastSeen = 'Front Counter' THEN 1
+            WHEN pd.LocationLastSeen = 'Head Office' THEN 1
+            WHEN pd.LocationLastSeen = 'Rodney Bay Office' THEN 2
+            WHEN pd.LocationLastSeen LIKE '%RB %' THEN 2
+            WHEN pd.LocationLastSeen LIKE '%Vieux Fort%' THEN 5
+            WHEN pd.LocationLastSeen LIKE '%VF %' THEN 5
+            WHEN pd.LocationLastSeen = 'Miami' THEN 6
+            WHEN pd.LocationLastSeen = 'Local Warehouse' THEN 7
+            ELSE NULL
+        END AS PackageLocationId,
+
+        -- ---- This step derives the Storage Id
+        -- ---- based on which shelf, box or area number
+        -- ---- the actual number is extracted from the number in the
+        -- ---- location last seen (e.g. RB AREA 2) would get a
+        -- ---- Storage Id of 2
+        -- ---- it sets it to NULL if no shelf, box or area is declared
+        CASE
+            WHEN pd.LocationLastSeen LIKE '%RB AREA%'
+                THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
+            WHEN pd.LocationLastSeen LIKE '%RB BOX%'
+                THEN CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC)
+            WHEN pd.LocationLastSeen LIKE '%RB SHELF%'
+                THEN CAST(SUBSTRING(pd.LocationName, 9, 3) AS NUMERIC)
+            WHEN pd.LocationName LIKE '%VF AREA%'
+                THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
+            WHEN pd.LocationName LIKE '%VF BOX%' THEN 5
+                THEN CAST(SUBSTRING(pd.LocationName, 7, 3) AS NUMERIC)
+            WHEN pd.LocationName LIKE '%VF SHELF%' THEN 5
+                THEN CAST(SUBSTRING(pd.LocationName, 8, 3) AS NUMERIC)
+            ELSE NULL
+        END AS PackageLocationLastStorageId,
+
+        -- ---- This checks if  location last seen
+        -- ---- is an area, box or shelf,
+        -- ---- and sets it appropriately, otherwise NULL
+        CASE
+            WHEN pd.LocationLastSeen LIKE '%AREA%' THEN 'AREA'
+            WHEN pd.LocationLastSeen LIKE '%BOX%' THEN 'BOX'
+            WHEN pd.LocationLastSeen LIKE '%SHELF%' THEN 'SHELF'
+            ELSE NULL
+        END AS PackageLocationLastStorageType,
 
         NULL AS RepositoryNumber,
         NULL AS RepositoryType,
-
         '' AS PackageInvoicePDF,
         0 AS PackageMarked,
         '' AS PackageTransactionIdentifier,
@@ -161,13 +172,13 @@ transformed AS (
             ELSE 0
         END AS AvailableSaturdayFlag
     FROM list_of_existing_package_numbers s
-    JOIN package_data pd ON pd.package_number {{ colsql }} = s.PackageNumber
+    JOIN package_data pd ON pd.PackageNumber = s.PackageNumber
     JOIN customer_data c
         ON pd.account_number = c.CustomerAccountNumber
         AND c.CustomerAgentPrefix = 'BSL'
     WHERE NOT EXISTS (
         SELECT 1 FROM existing_packages ep
-        WHERE ep.PackageNumber = pd.package_number {{ colsql }}
+        WHERE ep.PackageNumber = pd.PackageNumber
     )
 )
 
